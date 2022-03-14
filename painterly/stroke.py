@@ -26,7 +26,7 @@ def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
 
     # TODO optimize this - don't need to look this up every stroke
     noise_color_scale = shader['noise_color_scale']
-    noise_color_scale.value = 0.6
+    noise_color_scale.value = 0.07 / width ** .7
 
     length_distance_scale = shader['length_distance_scale']
     length_distance_scale.value = 1.6 / width**.1
