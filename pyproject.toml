@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "painterly"
+version = "0.1.0"
+description = ""
+authors = ["David Berthiaume <david@papercrane.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+moderngl = "^5.6.4"
+numpy = "^1.22.3"
+Pillow = "^9.0.1"
+moderngl-window = "^2.4.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
