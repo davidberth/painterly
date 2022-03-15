@@ -26,7 +26,7 @@ def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
 
     # TODO optimize this - don't need to look this up every stroke
     noise_color_scale = shader['noise_color_scale']
-    noise_color_scale.value = 0.07 / width ** .7
+    noise_color_scale.value = 0.3
 
     length_distance_scale = shader['length_distance_scale']
     length_distance_scale.value = 1.6 / width**.1
@@ -49,8 +49,8 @@ def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
 
     tex_x_offset = np.random.uniform(0.0, 1.0 - stroke_distance)
     tex_y_offset = np.random.uniform(0.0, 1.0 - width)
-    tex_x_end = tex_x_offset + stroke_distance * height_texture_scale
-    tex_y_end = tex_y_offset + width * length_texture_scale
+    tex_x_end = tex_x_offset + 0.7 * height_texture_scale
+    tex_y_end = tex_y_offset + 0.06 * length_texture_scale
 
     vertices = np.array([
      px1,   py1,   red, green, blue, alpha,  tex_x_offset, tex_y_offset, 0.0, 0.0,
