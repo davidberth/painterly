@@ -1,0 +1,13 @@
+start: instruction+
+
+instruction: STROKE coordinate coordinate brush -> stroke
+brush: "[" value value value value value "]" -> brush
+coordinate: value value -> coordinate
+STROKE: "s"
+uniform: "u" -> uniform
+normal: "n" -> normal
+value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)
+
+%import common.FLOAT -> NUMBER
+%import common.WS
+%ignore WS

@@ -22,14 +22,14 @@ def init(ctx):
     texture = ctx.texture([256,256], 1, noise_texture.tobytes(), dtype='f4')
     texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
-def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
+def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha, smoothness = 1.0):
 
     # TODO optimize this - don't need to look this up every stroke
     noise_color_scale = shader['noise_color_scale']
-    noise_color_scale.value = 0.3
+    noise_color_scale.value = 0.6
 
     length_distance_scale = shader['length_distance_scale']
-    length_distance_scale.value = 1.6 / width**.1
+    length_distance_scale.value = smoothness * 1.6 / width**.1
 
     side_distance_scale = shader['side_distance_scale']
     side_distance_scale.value = 40.0
@@ -52,14 +52,30 @@ def stroke( ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
     tex_x_end = tex_x_offset + 0.7 * height_texture_scale
     tex_y_end = tex_y_offset + 0.06 * length_texture_scale
 
-    vertices = np.array([
-     px1,   py1,   red, green, blue, alpha,  tex_x_offset, tex_y_offset, 0.0, 0.0,
-     px2,   py2,   red, green, blue, alpha,  tex_x_offset, tex_y_end, 0.0, 1.0,
-     px3,   py3,   red, green, blue, alpha,  tex_x_end, tex_y_offset, 1.0, 0.0,
-     px4,   py4,   red, green, blue, alpha,  tex_x_end, tex_y_end, 1.0, 1.0
-    ],
-    dtype='f4',
-    )
+    vertex_list = []
+    for t in np.arange(0.0, 1.002, 0.04):
+
+        x = x1 * (1.0-t) + x2 * t
+        y = y1 * (1.0-t) + y2 * t
+        tex_x = tex_x_offset * (1-t) + tex_x_end * t
+        scaling = np.random.uniform(0.8, 1.5)
+        lx1, ly1 = x - orthoganal_delta[0] * scaling, y - orthoganal_delta[1] * scaling
+        lx2, ly2 = x + orthoganal_delta[0] * scaling, y + orthoganal_delta[1] * scaling
+        vertex_list.append([lx1, ly1, red, green, blue, alpha, tex_x, tex_y_offset, t, 0.0])
+        vertex_list.append([lx2, ly2, red, green, blue, alpha, tex_x, tex_y_end, t, 1.0])
+
+    vertices = np.array(vertex_list, dtype='f4')
+
+
+
+    #vertices = np.array([
+    # px1,   py1,   red, green, blue, alpha,  tex_x_offset, tex_y_offset, 0.0, 0.0,
+    # px2,   py2,   red, green, blue, alpha,  tex_x_offset, tex_y_end, 0.0, 1.0,
+    # px3,   py3,   red, green, blue, alpha,  tex_x_end, tex_y_offset, 1.0, 0.0,
+    # px4,   py4,   red, green, blue, alpha,  tex_x_end, tex_y_end, 1.0, 1.0
+    #],
+    #dtype='f4',
+    #)
 
     vao = ctx.vertex_array(shader, ctx.buffer(vertices), 'in_vert', 'in_color', 'in_tex_coord', 'in_stroke_coord')
     vao.render(mode=moderngl.TRIANGLE_STRIP)
