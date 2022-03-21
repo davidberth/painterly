@@ -13,22 +13,33 @@ def setup_grammar(ctx, shader):
         text = file.read()
     results = parser.parse(text)
 
-    visitor = StrokeVisitor(ctx, shader)
+    initial_brush = {'hue':0.0, 'sat':0.0, 'bright':0.0, 'alpha':0.9, 'bristle':1.0,
+                     'thick':0.005, 'curve':0.0, 'rough':0.0, 'wave':0.0, 'consist':0.6}
+    visitor = StrokeVisitor(ctx, shader, initial_brush)
     visitor.transform(results)
 
 
 class StrokeVisitor(Transformer):
-    def __init__(self, ctx, shader):
+    def __init__(self, ctx, shader, initial_brush):
         super().__init__()
         self.ctx = ctx
         self.shader = shader
-    def stroke(self, tree):
+        self.current_brush = initial_brush
 
+    def brush(self, tree):
+        # here we update the brush dictionary
+        # TODO this will likely need to go in a top down visitor instead
+        # of the transformer
+        for brush_value in tree[1:]:
+            self.current_brush[brush_value[0]] = brush_value[1]
+
+    def stroke(self, tree):
         coord1 = tree[1]
         coord2 = tree[2]
-        brush = tree[3].children
-        print (coord1, coord2, brush)
-        stroke(self.ctx, self.shader, *coord1, *coord2, *brush)
+        stroke(self.ctx, self.shader, *coord1, *coord2, self.current_brush)
+
+    def brushvalue(self, tree):
+        return [tree[0].data, tree[0].children[0]]
 
     def coordinate(self, tree):
         return tree
@@ -39,7 +50,7 @@ class StrokeVisitor(Transformer):
             return float(tree[0].value)
         else:
             # we have a random distribution to sample from
-            print (tree[0])
+
             distribution = tree[0].data
             value1 = float(tree[1].value)
             value2 = float(tree[2].value)
@@ -51,19 +62,3 @@ class StrokeVisitor(Transformer):
                 return value
 
 
-
-
-
-#    for instruction in results.children:
-#        run_instruction(instruction, ctx, shader)
-
-#def run_instruction(t, ctx, shader):
-#    if t.data == 'stroke':
-#        _, x1, y1, x2, y2 = t.children
-#        x1 = float(x1.value)
-#        y1 = float(y1.value)
-#        x2 = float(x2.value)
-#        y2 = float(y2.value)
-#        stroke(ctx, shader, x1, y1, x2, y2, 0.05, 0.01, 0.01, 0.01, 0.9)
-#    else:
-#        raise SyntaxError('Unknown instruction: %s' % t.data)

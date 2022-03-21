@@ -1,9 +1,23 @@
 start: instruction+
 
-instruction: STROKE coordinate coordinate brush -> stroke
-brush: "[" value value value value value "]" -> brush
+instruction: stroke | brush
+stroke: STROKECOMMAND coordinate coordinate -> stroke
+brush: BRUSHCOMMAND (brushvalue)+  -> brush
 coordinate: value value -> coordinate
-STROKE: "s"
+brushvalue: [hue | sat | bright | alpha | thick | rough | curve | wavy] -> brushvalue
+
+// brush properties
+hue: "h" value -> hue
+sat: "s" value -> sat
+bright: "b" value -> bright
+alpha: "a" value -> alpha
+thick: "t" value -> thick
+rough: "r" value -> rough
+curve: "c" value -> curve
+wavy:  "w" value -> wavy
+
+STROKECOMMAND: "stroke"
+BRUSHCOMMAND: "brush"
 uniform: "u" -> uniform
 normal: "n" -> normal
 value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)
