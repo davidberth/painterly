@@ -25,6 +25,7 @@ class StrokeVisitor(Transformer):
         self.ctx = ctx
         self.shader = shader
         self.current_brush = initial_brush
+        self.current_stroke = {'wavy':0.0, 'curve':0.0}
 
     def brush(self, tree):
         # here we update the brush dictionary
@@ -34,9 +35,21 @@ class StrokeVisitor(Transformer):
             self.current_brush[brush_value[0]] = brush_value[1]
 
     def stroke(self, tree):
+
         coord1 = tree[1]
         coord2 = tree[2]
-        stroke(self.ctx, self.shader, *coord1, *coord2, self.current_brush)
+        self.current_stroke['x1'] = coord1[0]
+        self.current_stroke['y1'] = coord1[1]
+        self.current_stroke['x2'] = coord2[0]
+        self.current_stroke['y2'] = coord2[1]
+
+        if tree[3] is not None:
+            self.current_stroke['curve'] = tree[3].children[0]
+        if tree[4] is not None:
+            self.current_stroke['wavy'] = tree[4].children[0]
+
+        print (self.current_stroke)
+        stroke(self.ctx, self.shader, self.current_stroke, self.current_brush)
 
     def brushvalue(self, tree):
         return [tree[0].data, tree[0].children[0]]

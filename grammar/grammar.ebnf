@@ -1,10 +1,10 @@
 start: instruction+
 
 instruction: stroke | brush
-stroke: STROKECOMMAND coordinate coordinate -> stroke
+stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
-coordinate: value value -> coordinate
-brushvalue: [hue | sat | bright | alpha | thick | rough | curve | wavy] -> brushvalue
+coordinate: value value  -> coordinate
+brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
 
 // brush properties
 hue: "h" value -> hue
@@ -13,6 +13,8 @@ bright: "b" value -> bright
 alpha: "a" value -> alpha
 thick: "t" value -> thick
 rough: "r" value -> rough
+
+// path properties
 curve: "c" value -> curve
 wavy:  "w" value -> wavy
 

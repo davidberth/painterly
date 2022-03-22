@@ -22,10 +22,17 @@ def init(ctx):
     texture = ctx.texture([256,256], 1, noise_texture.tobytes(), dtype='f4')
     texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
-def stroke( ctx, shader, x1, y1, x2, y2, brush ):
+def stroke( ctx, shader, path, brush ):
             #width, red, green, blue, alpha, smoothness = 1.0):
 
     # TODO optimize this - don't need to look this up every stroke
+
+    x1 = path['x1']
+    y1 = path['y1']
+    x2 = path['x2']
+    y2 = path['y2']
+    curve = path['curve']
+
 
     width = brush['thick']
     red = brush['hue']
