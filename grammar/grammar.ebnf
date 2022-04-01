@@ -1,10 +1,11 @@
 start: instruction+
 
-instruction: stroke | brush
+instruction: stroke | brush | sample | COMMENT
 stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
 coordinate: value value  -> coordinate
 brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
+sample: SAMPLECOMMAND value
 
 // brush properties
 hue: "h" value -> hue
@@ -20,10 +21,14 @@ wavy:  "w" value -> wavy
 
 STROKECOMMAND: "stroke"
 BRUSHCOMMAND: "brush"
+SAMPLECOMMAND: "sample"
+COMMENT: "-" /[^\n]*/ NEWLINE
 uniform: "u" -> uniform
 normal: "n" -> normal
 value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)
 
-%import common.FLOAT -> NUMBER
+%import common.SIGNED_NUMBER -> NUMBER
+%import common.NEWLINE -> NEWLINE
+%import common.INTEGER -> INTEGER
 %import common.WS
 %ignore WS

@@ -1,5 +1,5 @@
 from lark import Lark, Transformer
-from stroke import stroke
+from stroke import do_stroke
 import numpy as np
 
 def setup_grammar(ctx, shader):
@@ -26,6 +26,10 @@ class StrokeVisitor(Transformer):
         self.shader = shader
         self.current_brush = initial_brush
         self.current_stroke = {'wavy':0.0, 'curve':0.0}
+        self.current_sample = False
+        self.current_transform = [0.0, 0.0]
+        self.path_x = []
+        self.path_y = []
 
     def brush(self, tree):
         # here we update the brush dictionary
@@ -33,6 +37,8 @@ class StrokeVisitor(Transformer):
         # of the transformer
         for brush_value in tree[1:]:
             self.current_brush[brush_value[0]] = brush_value[1]
+
+
 
     def stroke(self, tree):
 
@@ -48,8 +54,16 @@ class StrokeVisitor(Transformer):
         if tree[4] is not None:
             self.current_stroke['wavy'] = tree[4].children[0]
 
-        print (self.current_stroke)
-        stroke(self.ctx, self.shader, self.current_stroke, self.current_brush)
+        #TODO replace this with recursion - we need to visit the grammar multiple times for random numbers
+        if self.current_sample:
+            for x, y in zip(self.path_x, self.path_y):
+                self.path_x, self.path_y = do_stroke(self.ctx, self.shader, self.current_stroke, self.current_brush,
+                                                     [x,y])
+        else:
+            self.path_x, self.path_y = do_stroke(self.ctx, self.shader, self.current_stroke, self.current_brush, self.current_transform)
+
+    def sample(self, tree):
+        self.current_sample = True
 
     def brushvalue(self, tree):
         return [tree[0].data, tree[0].children[0]]

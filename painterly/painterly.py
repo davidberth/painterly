@@ -13,10 +13,10 @@ def draw_box(ctx, shader, x1, y1, x2, y2, width, red, green, blue, alpha):
 
 out_file = r'output\output.png'
 scaling_factor = 2
-size = (1600, 1100)
+size = (1800, 1200)
 
 
-buffer_size = (1024 * scaling_factor, 800 * scaling_factor)
+buffer_size = (size[0] * scaling_factor, size[1] * scaling_factor)
 ctx = moderngl.create_context(standalone=True)
 # generate the fractal noise texture
 # TODO reorganize this
