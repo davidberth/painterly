@@ -1,8 +1,9 @@
 start: instruction+
 
-instruction: stroke | brush | sample | COMMENT
+instruction: stroke | brush | sample | COMMENT | leftbracecommand | rightbracecommand
 stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
+
 coordinate: value value  -> coordinate
 brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
 sample: SAMPLECOMMAND value
@@ -19,10 +20,16 @@ rough: "r" value -> rough
 curve: "c" value -> curve
 wavy:  "w" value -> wavy
 
+// braces
+leftbracecommand: LEFTBRACE -> leftbrace
+rightbracecommand: RIGHTBRACE -> rightbrace
+
 STROKECOMMAND: "stroke"
 BRUSHCOMMAND: "brush"
 SAMPLECOMMAND: "sample"
 COMMENT: "-" /[^\n]*/ NEWLINE
+LEFTBRACE: "["
+RIGHTBRACE: "]"
 uniform: "u" -> uniform
 normal: "n" -> normal
 value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)

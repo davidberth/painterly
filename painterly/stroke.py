@@ -1,12 +1,14 @@
-import numpy as np
-import moderngl
-from perlin_numpy import generate_fractal_noise_2d
 import colorsys
+
+import moderngl
+import numpy as np
+from perlin_numpy import generate_fractal_noise_2d
 
 noise_texture = None
 texture = None
 height_texture_scale = 0.2
 length_texture_scale = 2.0
+
 
 def init(ctx):
     # TODO reorganize this
@@ -14,17 +16,17 @@ def init(ctx):
     global texture
 
     np.random.seed(0)
-    print ('generating noise')
-    noise_texture = generate_fractal_noise_2d((256,256), (8, 8), 5).astype(np.float32)
+    print('generating noise')
+    noise_texture = generate_fractal_noise_2d((256, 256), (8, 8), 5).astype(np.float32)
     # normalize to 0 .. 1
     noise_texture = (noise_texture + 1.0) / 2.0
-    print (' done')
+    print(' done')
 
-    texture = ctx.texture([256,256], 1, noise_texture.tobytes(), dtype='f4')
+    texture = ctx.texture([256, 256], 1, noise_texture.tobytes(), dtype='f4')
     texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
-def do_stroke( ctx, shader, path, brush, transform ):
 
+def do_stroke(ctx, shader, path, brush, transform):
     # TODO optimize this - don't need to look this up every stroke
 
     x1 = path['x1'] + transform[0]
@@ -50,7 +52,7 @@ def do_stroke( ctx, shader, path, brush, transform ):
     noise_color_scale.value = brush['consist']
 
     length_distance_scale = shader['length_distance_scale']
-    length_distance_scale.value = 1.0 * 1.6 / width**.1
+    length_distance_scale.value = 1.0 * 1.6 / width ** .1
 
     side_distance_scale = shader['side_distance_scale']
     side_distance_scale.value = 40.0
@@ -71,12 +73,11 @@ def do_stroke( ctx, shader, path, brush, transform ):
     path_x = []
     path_y = []
     for t in np.arange(0.0, 1.002, 0.04):
-
-        x = x1 * (1.0-t) + x2 * t
-        y = y1 * (1.0-t) + y2 * t
-        tex_x = tex_x_offset * (1-t) + tex_x_end * t
-        path_curve = np.sqrt(1 - (t*2.0 - 1)**2) * curve * stroke_distance * 0.5
-        path_wave = np.sin(t*4.0) * wavy * np.random.uniform(0.8, 1.2)
+        x = x1 * (1.0 - t) + x2 * t
+        y = y1 * (1.0 - t) + y2 * t
+        tex_x = tex_x_offset * (1 - t) + tex_x_end * t
+        path_curve = np.sqrt(1 - (t * 2.0 - 1) ** 2) * curve * stroke_distance * 0.5
+        path_wave = np.sin(t * 4.0) * wavy * np.random.uniform(0.8, 1.2)
         lx1, ly1 = x - orthogonal_direction[0] * (width_factor + path_curve + path_wave), \
                    y - orthogonal_direction[1] * (width_factor + path_curve + path_wave)
         lx2, ly2 = x + orthogonal_direction[0] * (width_factor - path_curve - path_wave), \
@@ -84,14 +85,13 @@ def do_stroke( ctx, shader, path, brush, transform ):
         vertex_list.append([lx1, ly1, red, green, blue, alpha, tex_x, tex_y_offset, t, 0.0])
         vertex_list.append([lx2, ly2, red, green, blue, alpha, tex_x, tex_y_end, t, 1.0])
 
-        path_x.append( ( lx1 + lx2 ) / 2 )
-        path_y.append( ( ly1 + ly2 ) / 2 )
-
+        path_x.append((lx1 + lx2) / 2)
+        path_y.append((ly1 + ly2) / 2)
 
     vertices = np.array(vertex_list, dtype='f4')
 
-    vao = ctx.vertex_array(shader, ctx.buffer(vertices), 'in_vert', 'in_color', 'in_tex_coord', 'in_stroke_coord')
+    vao = ctx.vertex_array(shader, ctx.buffer(vertices), 'in_vert', 'in_color', 'in_tex_coord',
+                           'in_stroke_coord')
     vao.render(mode=moderngl.TRIANGLE_STRIP)
 
     return path_x, path_y
-

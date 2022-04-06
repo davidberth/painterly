@@ -1,8 +1,18 @@
+"""This module parses the painterly language, traverses the grammar tree, and
+processes each command recursively."""
+
 from lark import Lark, Transformer
-from stroke import do_stroke
-import numpy as np
+
+import command
+import quantity
+
 
 def setup_grammar(ctx, shader):
+    """
+    This function reads the grammar file and initializes the parser
+    :param ctx: the OpenGL context for rendering
+    :param shader: the shader program used for rendering
+    """
     # read the grammar file
     with open('grammar/grammar.ebnf', 'r') as file:
         grammar = file.read()
@@ -13,68 +23,95 @@ def setup_grammar(ctx, shader):
         text = file.read()
     results = parser.parse(text)
 
-    initial_brush = {'hue':0.0, 'sat':0.0, 'bright':0.0, 'alpha':0.9, 'bristle':1.0,
-                     'thick':0.005, 'curve':0.0, 'rough':0.0, 'wave':0.0, 'consist':0.6}
-    visitor = StrokeVisitor(ctx, shader, initial_brush)
-    visitor.transform(results)
+    transformer = StrokeTransformer()
+    transformed_results = transformer.transform(results)
+
+    # here we iterate through the transformed tree recursively calling bracketed statement groups
+    # we start with 1 sample from the root node
+    process_command_group(transformed_results.children, 0)
 
 
-class StrokeVisitor(Transformer):
-    def __init__(self, ctx, shader, initial_brush):
-        super().__init__()
-        self.ctx = ctx
-        self.shader = shader
-        self.current_brush = initial_brush
-        self.current_stroke = {'wavy':0.0, 'curve':0.0}
-        self.current_sample = False
-        self.current_transform = [0.0, 0.0]
-        self.path_x = []
-        self.path_y = []
+def process_command_group(commands, level):
+    """
+    This function is recursively called to process the commands in the input painterly script.
+    :param commands: the list of commands to process at this level
+    :param level: the current indentation level
+    """
+    old_index = 99999
+    relative_indent = 0
+    num_samples = 0
+    for e, instruction in enumerate(commands):
+        sub_tree = instruction.children[0]
+        instruction_type = sub_tree.data
+        arguments = get_values(sub_tree.children)
 
-    def brush(self, tree):
-        # here we update the brush dictionary
-        # TODO this will likely need to go in a top down visitor instead
-        # of the transformer
-        for brush_value in tree[1:]:
-            self.current_brush[brush_value[0]] = brush_value[1]
+        match instruction_type:
+            case 'sample':
+                num_samples = int(arguments[0])
+            case 'leftbrace':
+                if relative_indent == 0:
+                    old_index = e + 1
+                relative_indent += 1
+
+            case 'rightbrace':
+                relative_indent -= 1
+
+                # call this function recursively on the collected commands within the inner indent
+                if relative_indent == 0:
+                    for sample in range(num_samples):
+                        process_command_group(commands[old_index:e], level + 1)
+            case _:
+                if relative_indent == 0:
+                    # call the command
+                    getattr(command, instruction_type)(arguments, None)
 
 
+def get_values(arguments):
+    """
+    Instantiates the Value objects into actual floating point values.
+    :param arguments: the arguments to process
+    :return: the processed arguments with Value objects turned into floating point numbers
+    """
+    realized = []
+    for argument in arguments[1:]:
 
-    def stroke(self, tree):
-
-        coord1 = tree[1]
-        coord2 = tree[2]
-        self.current_stroke['x1'] = coord1[0]
-        self.current_stroke['y1'] = coord1[1]
-        self.current_stroke['x2'] = coord2[0]
-        self.current_stroke['y2'] = coord2[1]
-
-        if tree[3] is not None:
-            self.current_stroke['curve'] = tree[3].children[0]
-        if tree[4] is not None:
-            self.current_stroke['wavy'] = tree[4].children[0]
-
-        #TODO replace this with recursion - we need to visit the grammar multiple times for random numbers
-        if self.current_sample:
-            for x, y in zip(self.path_x, self.path_y):
-                self.path_x, self.path_y = do_stroke(self.ctx, self.shader, self.current_stroke, self.current_brush,
-                                                     [x,y])
+        if isinstance(argument, list):
+            realized_argument = []
+            for component in argument:
+                if isinstance(component, quantity.Value):
+                    # crystallize the random value
+                    realized_argument.append(component.value)
+                else:
+                    realized_argument.append(component)
+            realized.append(realized_argument)
         else:
-            self.path_x, self.path_y = do_stroke(self.ctx, self.shader, self.current_stroke, self.current_brush, self.current_transform)
+            if isinstance(argument, quantity.Value):
+                realized.append(argument.value)
 
-    def sample(self, tree):
-        self.current_sample = True
+    return realized
+
+
+class StrokeTransformer(Transformer):
+    def __init__(self):
+        super().__init__()
 
     def brushvalue(self, tree):
         return [tree[0].data, tree[0].children[0]]
 
     def coordinate(self, tree):
-        return tree
+        return [tree[0], tree[1]]
+
+    def curve(self, tree):
+        return ['curve', tree[0]]
+
+    def wavy(self, tree):
+        return ['wavy', tree[0]]
+
     def value(self, tree):
         # should we rely on the length of the subtree here?
         if len(tree) == 1:
             # we have a single value
-            return float(tree[0].value)
+            return quantity.Value(tree[0].value, 0.0, quantity.ValueType.real)
         else:
             # we have a random distribution to sample from
 
@@ -82,10 +119,8 @@ class StrokeVisitor(Transformer):
             value1 = float(tree[1].value)
             value2 = float(tree[2].value)
             if distribution == 'uniform':
-                value = np.random.uniform(value1, value2)
+                value = quantity.Value(value1, value2, quantity.ValueType.uniform)
                 return value
             elif distribution == 'normal':
-                value = np.random.normal(value1, value2)
+                value = quantity.Value(value1, value2, quantity.ValueType.normal)
                 return value
-
-
