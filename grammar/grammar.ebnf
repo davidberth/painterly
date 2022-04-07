@@ -1,8 +1,10 @@
 start: instruction+
 
-instruction: stroke | brush | sample | COMMENT | leftbracecommand | rightbracecommand
+instruction: canvas | stroke | brush | sample | COMMENT | leftbracecommand | rightbracecommand | save
 stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
+canvas: CANVASCOMMAND value value value
+save: SAVECOMMAND CNAME -> save
 
 coordinate: value value  -> coordinate
 brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
@@ -24,9 +26,11 @@ wavy:  "w" value -> wavy
 leftbracecommand: LEFTBRACE -> leftbrace
 rightbracecommand: RIGHTBRACE -> rightbrace
 
+CANVASCOMMAND: "canvas"
 STROKECOMMAND: "stroke"
 BRUSHCOMMAND: "brush"
 SAMPLECOMMAND: "sample"
+SAVECOMMAND: "save"
 COMMENT: "-" /[^\n]*/ NEWLINE
 LEFTBRACE: "["
 RIGHTBRACE: "]"
@@ -34,8 +38,11 @@ uniform: "u" -> uniform
 normal: "n" -> normal
 value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)
 
+
+
 %import common.SIGNED_NUMBER -> NUMBER
 %import common.NEWLINE -> NEWLINE
 %import common.INTEGER -> INTEGER
+%import common.CNAME -> CNAME
 %import common.WS
 %ignore WS

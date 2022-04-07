@@ -1,17 +1,16 @@
 """This module parses the painterly language, traverses the grammar tree, and
 processes each command recursively."""
 
-from lark import Lark, Transformer
+from lark import Lark, Transformer, Token
 
 import command
+import context
 import quantity
 
 
-def setup_grammar(ctx, shader):
+def setup_grammar():
     """
     This function reads the grammar file and initializes the parser
-    :param ctx: the OpenGL context for rendering
-    :param shader: the shader program used for rendering
     """
     # read the grammar file
     with open('grammar/grammar.ebnf', 'r') as file:
@@ -26,12 +25,17 @@ def setup_grammar(ctx, shader):
     transformer = StrokeTransformer()
     transformed_results = transformer.transform(results)
 
+    # initialize a context
+    # This will hold the OpenGL buffer, window, shader, brush,
+    # and current sampler used for transforms
+    ctx = context.Context()
+
     # here we iterate through the transformed tree recursively calling bracketed statement groups
     # we start with 1 sample from the root node
-    process_command_group(transformed_results.children, 0)
+    process_command_group(transformed_results.children, ctx, 0)
 
 
-def process_command_group(commands, level):
+def process_command_group(commands, ctx, level):
     """
     This function is recursively called to process the commands in the input painterly script.
     :param commands: the list of commands to process at this level
@@ -48,6 +52,7 @@ def process_command_group(commands, level):
         match instruction_type:
             case 'sample':
                 num_samples = int(arguments[0])
+
             case 'leftbrace':
                 if relative_indent == 0:
                     old_index = e + 1
@@ -59,11 +64,11 @@ def process_command_group(commands, level):
                 # call this function recursively on the collected commands within the inner indent
                 if relative_indent == 0:
                     for sample in range(num_samples):
-                        process_command_group(commands[old_index:e], level + 1)
+                        process_command_group(commands[old_index:e], ctx, level + 1)
             case _:
                 if relative_indent == 0:
                     # call the command
-                    getattr(command, instruction_type)(arguments, None)
+                    getattr(command, instruction_type)(arguments, ctx)
 
 
 def get_values(arguments):
@@ -72,6 +77,7 @@ def get_values(arguments):
     :param arguments: the arguments to process
     :return: the processed arguments with Value objects turned into floating point numbers
     """
+    print(arguments)
     realized = []
     for argument in arguments[1:]:
 
@@ -86,6 +92,8 @@ def get_values(arguments):
             realized.append(realized_argument)
         else:
             if isinstance(argument, quantity.Value):
+                realized.append(argument.value)
+            elif isinstance(argument, Token):
                 realized.append(argument.value)
 
     return realized
