@@ -1,7 +1,7 @@
 """This module parses the painterly language, traverses the grammar tree, and
 processes each command recursively."""
 
-from lark import Lark, Transformer, Token
+from lark import Lark, Transformer, Token, Tree
 
 import command
 import context
@@ -45,30 +45,30 @@ def process_command_group(commands, ctx, level):
     """
     old_index = 99999
     relative_indent = 0
-    num_samples = 0
     for e, instruction in enumerate(commands):
         sub_tree = instruction.children[0]
-        instruction_type = sub_tree.data
-        arguments = get_values(sub_tree.children)
+        if isinstance(sub_tree, Tree):
+            instruction_type = sub_tree.data
+            arguments = get_values(sub_tree.children)
 
-        match instruction_type:
-            case 'leftbrace':
-                if relative_indent == 0:
-                    old_index = e + 1
-                relative_indent += 1
+            match instruction_type:
+                case 'leftbrace':
+                    if relative_indent == 0:
+                        old_index = e + 1
+                    relative_indent += 1
 
-            case 'rightbrace':
-                relative_indent -= 1
+                case 'rightbrace':
+                    relative_indent -= 1
 
-                # call this function recursively on the collected commands within the inner indent
-                if relative_indent == 0:
-                    for sample in range(ctx.num_samples):
-                        ctx.sample_number = sample
-                        process_command_group(commands[old_index:e], ctx, level + 1)
-            case _:
-                if relative_indent == 0:
-                    # call the command
-                    getattr(command, instruction_type)(arguments, ctx)
+                    # call this function recursively on the collected commands within the inner indent
+                    if relative_indent == 0:
+                        for sample in range(ctx.num_samples):
+                            ctx.sample_number = sample
+                            process_command_group(commands[old_index:e], ctx, level + 1)
+                case _:
+                    if relative_indent == 0:
+                        # call the command
+                        getattr(command, instruction_type)(arguments, ctx)
 
 
 def get_values(arguments):

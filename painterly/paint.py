@@ -75,7 +75,7 @@ def do_stroke(ctx, shader, path, brush, transform):
     vertex_list = []
     path_x = []
     path_y = []
-    for t in np.arange(0.0, 1.002, 0.08):
+    for t in np.arange(0.0, 1.002, 0.04):
         x = x1 * (1.0 - t) + x2 * t
         y = y1 * (1.0 - t) + y2 * t
         tex_x = tex_x_offset * (1 - t) + tex_x_end * t

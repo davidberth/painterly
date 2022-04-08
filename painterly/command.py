@@ -17,18 +17,19 @@ def canvas(arguments, ctx):
     print('canvas')
 
     # here we set up the OpenGL context and canvas
-    ctx.buffer_size = int(arguments[0]), int(arguments[1])
+    ctx.target_size = int(arguments[0]), int(arguments[1])
     ctx.scaling_factor = int(arguments[2])
 
-    print(ctx.buffer_size)
-    buffer_size = (ctx.buffer_size[0] * ctx.scaling_factor, ctx.buffer_size[1] * ctx.scaling_factor)
+    ctx.buffer_size = (
+        ctx.target_size[0] * ctx.scaling_factor, ctx.target_size[1] * ctx.scaling_factor)
     ctx.opengl_ctx = moderngl.create_context(standalone=True)
     # generate the fractal noise texture
-    paint.init(ctx.opengl_ctx)
 
-    ctx.fbo = ctx.opengl_ctx.simple_framebuffer(buffer_size, components=4)
+    ctx.fbo = ctx.opengl_ctx.simple_framebuffer(ctx.buffer_size, components=4)
     ctx.fbo.use()
     ctx.fbo.clear(1.0, 1.0, 1.0, 1.0)
+
+    paint.init(ctx.opengl_ctx)
 
     with open("shaders/vertex.glsl", "r", encoding="utf-8") as vertex_shader_file:
         vertex_shader = vertex_shader_file.read()
@@ -48,8 +49,8 @@ def save(arguments, ctx):
     # save the buffer to an image file and resize if needed for antialiasing
     image = Image.frombytes('RGBA', ctx.buffer_size, ctx.fbo.read(components=4))
     if ctx.scaling_factor > 1:
-        image = image.resize(ctx.buffer_size, Image.LANCZOS)
-    # image = image.transpose(Image.FLIP_TOP_BOTTOM)
+        image = image.resize(ctx.target_size, Image.ANTIALIAS)
+    image = image.transpose(Image.FLIP_TOP_BOTTOM)
     image.save(f'output/{name}.png', format='png')
 
 
