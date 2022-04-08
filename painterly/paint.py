@@ -33,6 +33,9 @@ def do_stroke(ctx, shader, path, brush, transform):
     y1 = path['y1'] + transform[1]
     x2 = path['x2'] + transform[0]
     y2 = path['y2'] + transform[1]
+
+    print(x1, y1, x2, y2)
+
     curve = path['curve']
     if curve is None:
         curve = 0.0
@@ -72,7 +75,7 @@ def do_stroke(ctx, shader, path, brush, transform):
     vertex_list = []
     path_x = []
     path_y = []
-    for t in np.arange(0.0, 1.002, 0.04):
+    for t in np.arange(0.0, 1.002, 0.08):
         x = x1 * (1.0 - t) + x2 * t
         y = y1 * (1.0 - t) + y2 * t
         tex_x = tex_x_offset * (1 - t) + tex_x_end * t

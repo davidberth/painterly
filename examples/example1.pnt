@@ -1,17 +1,10 @@
 canvas 800 800 2
-brush t0.02 h0.3 s1.0 b0.2 a0.8
-stroke -0.1 u0.2:0.8  1.1 0.1 c-0.1 w0.04
-sample 5
+brush t0.01 h0.0 s0.0 b0.0 a0.8
+stroke 0 .2 1 .2
+sample 15
 [
-    brush t0.015 h0.5 s1.0 b0.8 a0.7
-    stroke 0 0 0 .2 c0 w0
-    sample 10
-    [
-        stroke u0.6:0.7 u0.2:0.6 0.2 0.6
-    ]
+     stroke 0 0 0 .2
 ]
-brush t0.05 h0.3 s0.8 b0.2 a0.8
-stroke 0 1 1 0 c0.1 w0.1
 save output1
 
 

@@ -29,6 +29,8 @@ def setup_grammar():
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms
     ctx = context.Context()
+    brush = {'thick': 0.01, 'hue': 0.0, 'sat': 1.0, 'bright': 1.0, 'alpha': 0.8, 'consist': 0.1}
+    ctx.add_brush(brush)
 
     # here we iterate through the transformed tree recursively calling bracketed statement groups
     # we start with 1 sample from the root node
@@ -50,9 +52,6 @@ def process_command_group(commands, ctx, level):
         arguments = get_values(sub_tree.children)
 
         match instruction_type:
-            case 'sample':
-                num_samples = int(arguments[0])
-
             case 'leftbrace':
                 if relative_indent == 0:
                     old_index = e + 1
@@ -63,7 +62,8 @@ def process_command_group(commands, ctx, level):
 
                 # call this function recursively on the collected commands within the inner indent
                 if relative_indent == 0:
-                    for sample in range(num_samples):
+                    for sample in range(ctx.num_samples):
+                        ctx.sample_number = sample
                         process_command_group(commands[old_index:e], ctx, level + 1)
             case _:
                 if relative_indent == 0:
@@ -77,7 +77,6 @@ def get_values(arguments):
     :param arguments: the arguments to process
     :return: the processed arguments with Value objects turned into floating point numbers
     """
-    print(arguments)
     realized = []
     for argument in arguments[1:]:
 

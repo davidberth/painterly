@@ -3,10 +3,6 @@ Chinese style paintings with from distance-based lighting from a custom recursiv
 
 import grammar
 
-OUT_FILE = r'output\output.png'
-SCALING_FACTOR = 2
-SIZE = (1800, 1200)
-
 
 def main():
     grammar.setup_grammar()

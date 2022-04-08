@@ -5,6 +5,7 @@ import moderngl
 from PIL import Image
 
 import paint
+from sampler import Sampler
 
 
 def canvas(arguments, ctx):
@@ -48,7 +49,7 @@ def save(arguments, ctx):
     image = Image.frombytes('RGBA', ctx.buffer_size, ctx.fbo.read(components=4))
     if ctx.scaling_factor > 1:
         image = image.resize(ctx.buffer_size, Image.LANCZOS)
-    image = image.transpose(Image.FLIP_TOP_BOTTOM)
+    # image = image.transpose(Image.FLIP_TOP_BOTTOM)
     image.save(f'output/{name}.png', format='png')
 
 
@@ -69,6 +70,22 @@ def stroke(arguments, ctx):
     :param ctx: the current contex
     """
     print('stroke', arguments)
+    x1, y1 = arguments[0]
+    x2, y2 = arguments[1]
+    path = dict()
+    path['x1'] = x1
+    path['x2'] = x2
+    path['y1'] = y1
+    path['y2'] = y2
+    path['curve'] = None
+    path['wavy'] = None
+
+    if ctx.sampler is None:
+        transform = [0.0, 0.0]
+    else:
+        transform = ctx.sampler.get_coord(ctx.sample_number)
+
+    ctx.last_coords = paint.do_stroke(ctx.opengl_ctx, ctx.shader, path, ctx.brush, transform)
 
 
 def sample(arguments, ctx):
@@ -77,4 +94,5 @@ def sample(arguments, ctx):
     :param arguments: the arguments from the painterly command
     :param ctx: the current context
     """
-    print('sample', arguments)
+    ctx.num_samples = int(arguments[0] + 0.5)
+    ctx.add_sampler(Sampler(ctx.last_coords, ctx.num_samples))
