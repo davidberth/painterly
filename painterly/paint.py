@@ -4,6 +4,8 @@ import moderngl
 import numpy as np
 from perlin_numpy import generate_fractal_noise_2d
 
+from brush import Brush
+
 noise_texture = None
 texture = None
 height_texture_scale = 0.2
@@ -26,7 +28,7 @@ def init(ctx):
     texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
 
 
-def do_stroke(ctx, shader, path, brush, transform):
+def do_stroke(ctx, shader, path, brush: Brush, transform):
     # TODO optimize this - don't need to look this up every stroke
 
     x1 = path['x1'] + transform[0]
@@ -43,16 +45,16 @@ def do_stroke(ctx, shader, path, brush, transform):
     if wavy is None:
         wavy = 0.0
 
-    width = brush['thick']
-    hue = brush['hue']
-    sat = brush['sat']
-    bright = brush['bright']
-    alpha = brush['alpha']
+    width = brush.thick
+    hue = brush.hue
+    sat = brush.sat
+    bright = brush.value
+    alpha = brush.alpha
 
     red, green, blue = colorsys.hsv_to_rgb(hue, sat, bright)
 
     noise_color_scale = shader['noise_color_scale']
-    noise_color_scale.value = brush['consist']
+    noise_color_scale.value = brush.consistency
 
     length_distance_scale = shader['length_distance_scale']
     length_distance_scale.value = 1.0 * 1.6 / width ** .1

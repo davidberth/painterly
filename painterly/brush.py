@@ -9,8 +9,9 @@ from dataclasses import dataclass
 class Brush:
     # by default, we have a simple black brush used for the outlines of objects
     # in Chinese style paintings
-    thick: float = 0.001
+    thick: float = 0.004
     hue: float = 0.0
     sat: float = 0.0
     value: float = 0.0
     alpha: float = 0.9
+    consistency: float = 0.5

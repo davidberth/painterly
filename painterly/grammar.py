@@ -6,6 +6,7 @@ from lark import Lark, Transformer, Token, Tree
 import command
 import context
 import quantity
+from brush import Brush
 
 
 def setup_grammar():
@@ -29,7 +30,7 @@ def setup_grammar():
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms
     ctx = context.Context()
-    brush = {'thick': 0.01, 'hue': 0.0, 'sat': 1.0, 'bright': 1.0, 'alpha': 0.8, 'consist': 0.1}
+    brush = Brush()
     ctx.add_brush(brush)
 
     # here we iterate through the transformed tree recursively calling bracketed statement groups
@@ -45,6 +46,9 @@ def process_command_group(commands, ctx, level):
     """
     old_index = 99999
     relative_indent = 0
+
+    ctx.push_sampler()
+    ctx.push_brush()
     for e, instruction in enumerate(commands):
         sub_tree = instruction.children[0]
         if isinstance(sub_tree, Tree):
@@ -65,10 +69,14 @@ def process_command_group(commands, ctx, level):
                         for sample in range(ctx.num_samples):
                             ctx.sample_number = sample
                             process_command_group(commands[old_index:e], ctx, level + 1)
+
+                    ctx.sample_number = 0
                 case _:
                     if relative_indent == 0:
                         # call the command
                         getattr(command, instruction_type)(arguments, ctx)
+    ctx.pop_sampler()
+    ctx.pop_brush()
 
 
 def get_values(arguments):

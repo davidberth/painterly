@@ -27,7 +27,7 @@ def canvas(arguments, ctx):
 
     ctx.fbo = ctx.opengl_ctx.simple_framebuffer(ctx.buffer_size, components=4)
     ctx.fbo.use()
-    ctx.fbo.clear(1.0, 1.0, 1.0, 1.0)
+    ctx.fbo.clear(0.8, 0.8, 0.8, 1.0)
 
     paint.init(ctx.opengl_ctx)
 
@@ -96,4 +96,4 @@ def sample(arguments, ctx):
     :param ctx: the current context
     """
     ctx.num_samples = int(arguments[0] + 0.5)
-    ctx.add_sampler(Sampler(ctx.last_coords, ctx.num_samples))
+    ctx.replace_sampler(Sampler(ctx.last_coords, ctx.num_samples))
