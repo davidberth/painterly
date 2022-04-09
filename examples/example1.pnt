@@ -1,13 +1,31 @@
-canvas 1200 800 2
-brush t0.04 h0.0 s0.0 b0.0 a0.8
-stroke 0 .4 1 .4
-sample 15
+- D. Berthiaume 4/9/2022
+canvas 1900 700 4
+brush t0.01 h0.5 s0.4 b0.5 a0.8
+stroke 0 .2 1 .25 c0.03 w0.1
+sample 20
 [
-    stroke 0 0 0 u.1:.4
-    sample 5
+    brush bu0.3:0.4 hu0.7:0.92
+    stroke 0 0 0 u.1:.8
+    sample u5:7
     [
-        stroke u-0.1:-0.05 0 u0.05:0.1 0
+        brush h0.5 b1.0 tu0.005:0.008
+        stroke u-0.07:-0.015 0 u0.015:0.07 0 wu-0.02:0.02
+        sample 6
+        [
+            brush hu0:1 b1.0 t0.012
+            stroke 0 0 0 0.009
+        ]
     ]
+    sample 3
+    [
+        brush h0 t0.0007 s0 b0.5 a0.17
+        stroke u-0.2:-0.07 0.1 0.1 0.1
+    ]
+]
+sample 350
+[
+    brush h.3 tu0.002:0.004 s0.7 b0.7 au0.2:0.5
+    stroke 0 0 u-0.01:0.01 u0.01:0.03
 ]
 save output1
 

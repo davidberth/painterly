@@ -7,6 +7,7 @@ import command
 import context
 import quantity
 from brush import Brush
+from sampler import Sampler
 
 
 def setup_grammar():
@@ -30,8 +31,8 @@ def setup_grammar():
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms
     ctx = context.Context()
-    brush = Brush()
-    ctx.add_brush(brush)
+    ctx.set_brush(Brush())
+    ctx.set_sampler(Sampler())
 
     # here we iterate through the transformed tree recursively calling bracketed statement groups
     # we start with 1 sample from the root node
@@ -47,8 +48,7 @@ def process_command_group(commands, ctx, level):
     old_index = 99999
     relative_indent = 0
 
-    ctx.push_sampler()
-    ctx.push_brush()
+    ctx.push()
     for e, instruction in enumerate(commands):
         sub_tree = instruction.children[0]
         if isinstance(sub_tree, Tree):
@@ -75,8 +75,7 @@ def process_command_group(commands, ctx, level):
                     if relative_indent == 0:
                         # call the command
                         getattr(command, instruction_type)(arguments, ctx)
-    ctx.pop_sampler()
-    ctx.pop_brush()
+    ctx.pop()
 
 
 def get_values(arguments):

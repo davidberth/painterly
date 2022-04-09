@@ -14,16 +14,23 @@ class SamplerType(Enum):
 
 class Sampler:
 
-    def __init__(self, coords, num_samples):
+    def __init__(self, coords=((0, 0), (0, 0)), num_samples=1):
         self.num_samples = int(num_samples + 0.5)
+        num_coords = len(coords[0])
         x, y = coords
-        x1, y1 = x[0], y[0]
-        x2, y2 = x[-1], y[-1]
         self.x_coords = []
         self.y_coords = []
         for t in np.linspace(0.0, 1.0, self.num_samples):
-            self.x_coords.append(x1 * (1 - t) + x2 * t)
-            self.y_coords.append(y1 * (1 - t) + y2 * t)
+            left_index = int(t * (num_coords - 1) - 0.01)
+            right_index = left_index + 1
+            inner_t = t * (num_coords - 1) - left_index
+            ix1, iy1 = x[left_index], y[left_index]
+            ix2, iy2 = x[right_index], y[right_index]
+            self.x_coords.append(ix1 * (1 - inner_t) + ix2 * inner_t)
+            self.y_coords.append(iy1 * (1 - inner_t) + iy2 * inner_t)
 
     def get_coord(self, coord_number: int):
         return self.x_coords[coord_number], self.y_coords[coord_number]
+
+    def __repr__(self):
+        return str(self.x_coords) + ' - ' + str(self.y_coords)

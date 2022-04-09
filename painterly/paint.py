@@ -36,8 +36,6 @@ def do_stroke(ctx, shader, path, brush: Brush, transform):
     x2 = path['x2'] + transform[0]
     y2 = path['y2'] + transform[1]
 
-    print(x1, y1, x2, y2)
-
     curve = path['curve']
     if curve is None:
         curve = 0.0
@@ -48,7 +46,7 @@ def do_stroke(ctx, shader, path, brush: Brush, transform):
     width = brush.thick
     hue = brush.hue
     sat = brush.sat
-    bright = brush.value
+    bright = brush.bright
     alpha = brush.alpha
 
     red, green, blue = colorsys.hsv_to_rgb(hue, sat, bright)

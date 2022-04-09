@@ -14,7 +14,6 @@ def canvas(arguments, ctx):
     :param arguments: the arguments from the painterly command
     :param ctx: the current contex
     """
-    print('canvas')
 
     # here we set up the OpenGL context and canvas
     ctx.target_size = int(arguments[0]), int(arguments[1])
@@ -60,7 +59,8 @@ def brush(arguments, ctx):
     :param arguments: the arguments from the painterly command
     :param ctx: the current contex
     """
-    print('brush', arguments)
+    for attribute in arguments:
+        setattr(ctx.brush, attribute[0], attribute[1])
 
 
 def stroke(arguments, ctx):
@@ -70,7 +70,7 @@ def stroke(arguments, ctx):
     :param arguments: the arguments from the painterly command
     :param ctx: the current contex
     """
-    print('stroke', arguments)
+    # TODO we need a stroke or path class
     x1, y1 = arguments[0]
     x2, y2 = arguments[1]
     path = dict()
@@ -78,15 +78,19 @@ def stroke(arguments, ctx):
     path['x2'] = x2
     path['y1'] = y1
     path['y2'] = y2
-    path['curve'] = None
     path['wavy'] = None
+    path['curve'] = None
+    if len(arguments) > 2:
+        path[arguments[2][0]] = arguments[2][1]
+    if len(arguments) > 3:
+        path[arguments[3][0]] = arguments[3][1]
 
     if ctx.sampler is None:
         transform = [0.0, 0.0]
     else:
         transform = ctx.sampler.get_coord(ctx.sample_number)
 
-    ctx.last_coords = paint.do_stroke(ctx.opengl_ctx, ctx.shader, path, ctx.brush, transform)
+    ctx.set_last_coords(paint.do_stroke(ctx.opengl_ctx, ctx.shader, path, ctx.brush, transform))
 
 
 def sample(arguments, ctx):
@@ -96,4 +100,4 @@ def sample(arguments, ctx):
     :param ctx: the current context
     """
     ctx.num_samples = int(arguments[0] + 0.5)
-    ctx.replace_sampler(Sampler(ctx.last_coords, ctx.num_samples))
+    ctx.set_sampler(Sampler(ctx.last_coord, ctx.num_samples))

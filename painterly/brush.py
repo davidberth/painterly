@@ -12,6 +12,6 @@ class Brush:
     thick: float = 0.004
     hue: float = 0.0
     sat: float = 0.0
-    value: float = 0.0
+    bright: float = 0.0
     alpha: float = 0.9
     consistency: float = 0.5
