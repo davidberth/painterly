@@ -16,6 +16,8 @@ sample 20
             stroke 0 0 0 0.009
         ]
     ]
+    brush b1.0 h0.0 s0.0 t0.003 a0.89
+    stroke -0.004 0 -0.004 u.1:.6
     sample 3
     [
         brush h0 t0.0007 s0 b0.5 a0.17

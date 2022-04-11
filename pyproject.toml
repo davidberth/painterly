@@ -8,11 +8,9 @@ authors = ["David Berthiaume <david@papercrane.io>"]
 python = "^3.10"
 moderngl = "^5.6.4"
 numpy = "^1.22.3"
-Pillow = "^9.0.1"
-moderngl-window = "^2.4.1"
-matplotlib = "^3.5.1"
+Pillow = "^9.1.0"
 lark = "^1.1.2"
-pylint = "^2.13.4"
+perlin-numpy = {git = "https://github.com/pvigier/perlin-numpy.git"}
 
 [tool.poetry.dev-dependencies]
 
