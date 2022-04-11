@@ -1,11 +1,11 @@
 """This module is the main entry to the painterly library.  This library simulates
 Chinese style paintings with from distance-based lighting from a custom recursive language"""
-
-import grammar
+from script_traverser import ScriptTraverser
 
 
 def main():
-    grammar.setup_grammar()
+    script_traverser = ScriptTraverser()
+    script_traverser.setup_grammar()
 
 
 if __name__ == '__main__':
