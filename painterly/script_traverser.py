@@ -1,12 +1,13 @@
 """This module parses the painterly language, traverses the grammar tree, and
 processes each command recursively."""
 
-from lark import Lark, Transformer, Token, Tree
+from lark import Lark, Tree
 
 import brush_stack
 import command_processor
 import opengl_context
 import quantity
+from script_transformer import ScriptTransformer
 
 
 class ScriptTraverser:
@@ -25,7 +26,7 @@ class ScriptTraverser:
             text = file.read()
         results = parser.parse(text)
 
-        transformer = StrokeTransformer()
+        transformer = ScriptTransformer()
         transformed_results = transformer.transform(results)
 
         # initialize a context
@@ -56,7 +57,7 @@ class ScriptTraverser:
             sub_tree = instruction.children[0]
             if isinstance(sub_tree, Tree):
                 instruction_type = sub_tree.data
-                arguments = self.get_values(sub_tree.children)
+                arguments = quantity.get_values(sub_tree.children)
 
                 match instruction_type:
                     case 'leftbrace':
@@ -85,67 +86,3 @@ class ScriptTraverser:
                                 arguments,
                                 self.stack.brush_context)
         self.stack.pop()
-
-    def get_values(self, arguments):
-        """
-        Instantiates the Value objects into actual floating point values.
-        :param arguments: the arguments to process
-        :return: the processed arguments with Value objects
-                turned into floating point numbers
-        """
-        realized = []
-        for argument in arguments[1:]:
-
-            if isinstance(argument, list):
-                realized_argument = []
-                for component in argument:
-                    if isinstance(component, quantity.Value):
-                        # crystallize the random value
-                        realized_argument.append(component.value)
-                    else:
-                        realized_argument.append(component)
-                realized.append(realized_argument)
-            else:
-                if isinstance(argument, quantity.Value):
-                    realized.append(argument.value)
-                elif isinstance(argument, Token):
-                    realized.append(argument.value)
-
-        return realized
-
-
-class StrokeTransformer(Transformer):
-    def __init__(self):
-        super().__init__()
-
-    def brushvalue(self, tree):
-        return [tree[0].data, tree[0].children[0]]
-
-    def coordinate(self, tree):
-        return [tree[0], tree[1]]
-
-    def curve(self, tree):
-        return ['curve', tree[0]]
-
-    def wavy(self, tree):
-        return ['wavy', tree[0]]
-
-    def value(self, tree):
-        # should we rely on the length of the subtree here?
-        if len(tree) == 1:
-            # we have a single value
-            return quantity.Value(tree[0].value, 0.0, quantity.ValueType.real)
-        else:
-            # we have a random distribution to sample from
-
-            distribution = tree[0].data
-            value1 = float(tree[1].value)
-            value2 = float(tree[2].value)
-            if distribution == 'uniform':
-                value = quantity.Value(value1, value2,
-                                       quantity.ValueType.uniform)
-                return value
-            elif distribution == 'normal':
-                value = quantity.Value(value1, value2,
-                                       quantity.ValueType.normal)
-                return value

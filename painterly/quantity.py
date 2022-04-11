@@ -3,6 +3,7 @@
 from enum import Enum
 
 import numpy as np
+from lark import Token
 
 
 class ValueType(Enum):
@@ -36,3 +37,31 @@ class Value:
                 return np.random.normal(self.value1, self.value2)
 
         return 0.0
+
+
+def get_values(arguments):
+    """
+    Instantiates the Value objects into actual floating point values.
+    :param arguments: the arguments to process
+    :return: the processed arguments with Value objects
+            turned into floating point numbers
+    """
+    realized = []
+    for argument in arguments[1:]:
+
+        if isinstance(argument, list):
+            realized_argument = []
+            for component in argument:
+                if isinstance(component, Value):
+                    # crystallize the random value
+                    realized_argument.append(component.value)
+                else:
+                    realized_argument.append(component)
+            realized.append(realized_argument)
+        else:
+            if isinstance(argument, Value):
+                realized.append(argument.value)
+            elif isinstance(argument, Token):
+                realized.append(argument.value)
+
+    return realized
