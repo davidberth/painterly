@@ -4,7 +4,8 @@ processes each command recursively."""
 from lark import Lark, Transformer, Token, Tree
 
 import command
-import context
+import opengl_context
+import brush_stack
 import quantity
 from brush import Brush
 from sampler import Sampler
@@ -30,25 +31,26 @@ def setup_grammar():
     # initialize a context
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms
-    ctx = context.Context()
-    ctx.set_brush(Brush())
-    ctx.set_sampler(Sampler())
+    opengl_ctx = opengl_context.OpenglContext()
+    stack = brush_stack.BrushStack()
 
-    # here we iterate through the transformed tree recursively calling bracketed statement groups
+    # here we iterate through the transformed tree recursively
+    # calling bracketed statement groups
     # we start with 1 sample from the root node
-    process_command_group(transformed_results.children, ctx, 0)
+    process_command_group(transformed_results.children, opengl_ctx, stack, 0)
 
 
-def process_command_group(commands, ctx, level):
+def process_command_group(commands, opengl_ctx, stack, level):
     """
-    This function is recursively called to process the commands in the input painterly script.
+    This function is recursively called to process the commands in the input
+    painterly script.
     :param commands: the list of commands to process at this level
     :param level: the current indentation level
     """
     old_index = 99999
     relative_indent = 0
 
-    ctx.push()
+    stack.push()
     for e, instruction in enumerate(commands):
         sub_tree = instruction.children[0]
         if isinstance(sub_tree, Tree):
@@ -64,25 +66,31 @@ def process_command_group(commands, ctx, level):
                 case 'rightbrace':
                     relative_indent -= 1
 
-                    # call this function recursively on the collected commands within the inner indent
+                    # call this function recursively on the collected commands
+                    # within the inner indent
                     if relative_indent == 0:
-                        for sample in range(ctx.num_samples):
-                            ctx.sample_number = sample
-                            process_command_group(commands[old_index:e], ctx, level + 1)
+                        for sample in range(stack.brush_context.num_samples):
+                            stack.brush_context.sample_number = sample
+                            process_command_group(commands[old_index:e],
+                                                  opengl_ctx, stack,
+                                                  level + 1)
 
-                    ctx.sample_number = 0
+                    stack.brush_context.sample_number = 0
                 case _:
                     if relative_indent == 0:
                         # call the command
-                        getattr(command, instruction_type)(arguments, ctx)
-    ctx.pop()
+                        getattr(command, instruction_type)(arguments,
+                                                           opengl_ctx,
+                                                           stack.brush_context)
+    stack.pop()
 
 
 def get_values(arguments):
     """
     Instantiates the Value objects into actual floating point values.
     :param arguments: the arguments to process
-    :return: the processed arguments with Value objects turned into floating point numbers
+    :return: the processed arguments with Value objects
+            turned into floating point numbers
     """
     realized = []
     for argument in arguments[1:]:
@@ -133,8 +141,10 @@ class StrokeTransformer(Transformer):
             value1 = float(tree[1].value)
             value2 = float(tree[2].value)
             if distribution == 'uniform':
-                value = quantity.Value(value1, value2, quantity.ValueType.uniform)
+                value = quantity.Value(value1, value2,
+                                       quantity.ValueType.uniform)
                 return value
             elif distribution == 'normal':
-                value = quantity.Value(value1, value2, quantity.ValueType.normal)
+                value = quantity.Value(value1, value2,
+                                       quantity.ValueType.normal)
                 return value

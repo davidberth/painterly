@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "painterly"
 version = "0.1.0"
-description = ""
-authors = ["David Berthiaume <david@papercrane.io>"]
+description = "This is a generative art project that creates paintings in the Gongbi style."
+authors = ["David Berthiaume <dberthiaume@g.harvard.edu>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
