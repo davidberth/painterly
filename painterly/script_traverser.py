@@ -11,7 +11,7 @@ class ScriptTraverser:
     close_command = 'rightbrace'
     sample_command = 'sample'
 
-    def preprocess_script(self, commands, level=0, sample_number=0):
+    def traverse_script(self, commands, level=0, sample_number=0):
         """
         This function is recursively called to traverse a painterly script
         :param commands: the list of commands to process at this level
@@ -36,7 +36,7 @@ class ScriptTraverser:
                     if relative_indent == 0:
                         for sample_number in range(
                                 num_samples):
-                            yield from self.preprocess_script(
+                            yield from self.traverse_script(
                                 commands[old_index:e],
                                 level + 1, sample_number)
                         sample_number = 0

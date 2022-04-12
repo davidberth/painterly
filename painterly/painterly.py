@@ -31,7 +31,7 @@ def main():
     # we start with 1 sample from the root node
     script_traverser = ScriptTraverser()
     # traverse recursively through the painterly script
-    for sample_number, command, arguments in script_traverser.preprocess_script(
+    for sample_number, command, arguments in script_traverser.traverse_script(
             transformed_results.children):
         print(sample_number, command, arguments)
 
