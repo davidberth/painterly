@@ -3,7 +3,7 @@ from lark import Transformer
 import quantity
 
 
-class ScriptTransformer(Transformer):
+class ScriptPreprocessor(Transformer):
     def __init__(self):
         super().__init__()
 
