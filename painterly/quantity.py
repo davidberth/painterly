@@ -1,4 +1,5 @@
-"""This module contains a simple class to define random or deterministic values"""
+"""This module contains a simple class to define
+random or deterministic values"""
 
 from enum import Enum
 
@@ -14,7 +15,8 @@ class ValueType(Enum):
 
 class Value:
     """
-    This class implements a determinstic or random value using several random distributions.
+    This class implements a determinstic or random value using
+    several random distributions.
     """
 
     def __init__(self, value1, value2, value_type):
@@ -25,7 +27,8 @@ class Value:
     @property
     def value(self):
         """
-        This function instantiates the random or deterministic value into a float
+        This function instantiates the random or
+         deterministic value into a float
         :return: the computed float value
         """
         match self.value_type:

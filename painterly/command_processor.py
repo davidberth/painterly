@@ -4,14 +4,23 @@ This module contains functions to process each of the painterly commands.
 from PIL import Image
 
 import paint
+from brush_stack import BrushStack
 from sampler import Sampler
 
 
 class CommandProcessor:
     def __init__(self, opengl_ctx):
         self.opengl_ctx = opengl_ctx
+        self.brush_stack = BrushStack()
 
-    def canvas(self, arguments, brush_ctx):
+    def set_sample_number(self, sample_number):
+        self.brush_stack.brush_context.sample_number = sample_number
+
+    @property
+    def num_samples(self):
+        return self.brush_stack.brush_context.num_samples
+
+    def canvas(self, arguments):
         """
         Initializes the OpenGL window with the canvas size and antialiasing factor
         :param arguments: the arguments from the painterly command
@@ -22,7 +31,7 @@ class CommandProcessor:
         scaling_factor = int(arguments[2])
         self.opengl_ctx.init(width, height, scaling_factor)
 
-    def save(self, arguments, brush_ctx):
+    def save(self, arguments):
         # clean up the context
         name = arguments[0]
         self.opengl_ctx.ctx.finish()
@@ -35,16 +44,17 @@ class CommandProcessor:
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
         image.save(f'output/{name}.png', format='png')
 
-    def brush(self, arguments, brush_ctx):
+    def brush(self, arguments):
         """
         Changes the characteristics of the current brush
         :param arguments: the arguments from the painterly command
         :param ctx: the current contex
         """
         for attribute in arguments:
-            setattr(brush_ctx.brush, attribute[0], attribute[1])
+            setattr(self.brush_stack.brush_context.brush,
+                    attribute[0], attribute[1])
 
-    def stroke(self, arguments, brush_ctx):
+    def stroke(self, arguments):
         """
         Performs a brush stroke at the provided coordinates and with
         the given curve and wavy values.
@@ -66,22 +76,23 @@ class CommandProcessor:
         if len(arguments) > 3:
             path[arguments[3][0]] = arguments[3][1]
 
-        if brush_ctx.sampler is None:
+        if self.brush_stack.brush_context.sampler is None:
             transform = [0.0, 0.0]
         else:
-            transform = brush_ctx.sampler.get_coord(
-                brush_ctx.sample_number)
+            transform = self.brush_stack.brush_context.sampler.get_coord(
+                self.brush_stack.brush_context.sample_number)
 
-        brush_ctx.set_path_coords(
+        self.brush_stack.brush_context.set_path_coords(
             paint.do_stroke(self.opengl_ctx, self.opengl_ctx.shader, path,
-                            brush_ctx.brush,
+                            self.brush_stack.brush_context.brush,
                             transform))
 
-    def sample(self, arguments, brush_ctx):
+    def sample(self, arguments):
         """
         Sets the current sampler object to the provided sampler type.
         :param arguments: the arguments from the painterly command
         """
-        brush_ctx.num_samples = int(arguments[0] + 0.5)
-        brush_ctx.sampler = Sampler(brush_ctx.path_coords,
-                                    brush_ctx.num_samples)
+        self.brush_stack.brush_context.num_samples = int(arguments[0] + 0.5)
+        self.brush_stack.brush_context.sampler = Sampler(
+            self.brush_stack.brush_context.path_coords,
+            self.brush_stack.brush_context.num_samples)

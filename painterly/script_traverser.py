@@ -3,7 +3,6 @@ processes each command recursively."""
 
 from lark import Lark, Tree
 
-import brush_stack
 import command_processor
 import opengl_context
 import quantity
@@ -33,7 +32,6 @@ class ScriptTraverser:
         # This will hold the OpenGL buffer, window, shader, brush,
         # and current sampler used for transforms
         opengl_ctx = opengl_context.OpenglContext()
-        self.stack = brush_stack.BrushStack()
 
         self.command_processor = command_processor.CommandProcessor(opengl_ctx)
         # here we iterate through the transformed tree recursively
@@ -51,7 +49,7 @@ class ScriptTraverser:
         old_index = 99999
         relative_indent = 0
 
-        self.stack.push()
+        self.command_processor.brush_stack.push()
 
         for e, instruction in enumerate(commands):
             sub_tree = instruction.children[0]
@@ -68,21 +66,21 @@ class ScriptTraverser:
                     case 'rightbrace':
                         relative_indent -= 1
 
-                        # call this function recursively on the collected commands
+                        # call this function recursively on the
+                        # collected commands
                         # within the inner indent
                         if relative_indent == 0:
                             for sample in range(
-                                    self.stack.brush_context.num_samples):
-                                self.stack.brush_context.sample_number = sample
+                                    self.command_processor.num_samples):
+                                self.command_processor.set_sample_number(sample)
                                 self.process_command_group(
                                     commands[old_index:e],
                                     level + 1)
 
-                        self.stack.brush_context.sample_number = 0
+                        self.command_processor.set_sample_number(0)
                     case _:
                         if relative_indent == 0:
                             # call the command
                             getattr(self.command_processor, instruction_type)(
-                                arguments,
-                                self.stack.brush_context)
-        self.stack.pop()
+                                arguments)
+        self.command_processor.brush_stack.pop()
