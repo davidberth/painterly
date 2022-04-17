@@ -7,9 +7,8 @@ import quantity
 
 
 class ScriptTraverser:
-    close_command = 'rightbrace'
-    sample_command = 'sample'
-    num_samples = [1]
+    CLOSE_COMMAND = 'rightbrace'
+    SAMPLE_COMMAND = 'sample'
 
     def traverse_script(self, commands, level=0, sample_number=0):
         """
@@ -21,15 +20,13 @@ class ScriptTraverser:
         old_index = 999999
         relative_indent = 0
 
-        self.num_samples.append(self.num_samples[-1])
-
         for e, instruction in enumerate(commands):
             sub_tree = instruction.children[0]
             if isinstance(sub_tree, Tree):
                 instruction_type = sub_tree.data
                 arguments = quantity.get_values(sub_tree.children)
 
-                if instruction_type == self.close_command:
+                if instruction_type == self.CLOSE_COMMAND:
                     relative_indent -= 1
 
                     # yield this function recursively on the
@@ -37,7 +34,7 @@ class ScriptTraverser:
                     # within the inner indent
                     if relative_indent == 0:
                         for sample_number_inner in range(
-                                self.num_samples[-1]):
+                                num_samples):
                             yield from self.traverse_script(
                                 commands[old_index:e],
                                 level + 1, sample_number_inner)
@@ -46,10 +43,8 @@ class ScriptTraverser:
                     yield [sample_number, level, instruction_type,
                            arguments]
 
-                if instruction_type == self.sample_command:
+                if instruction_type == self.SAMPLE_COMMAND:
                     if relative_indent == 0:
-                        self.num_samples[-1] = int(arguments[0] + 0.5)
+                        num_samples = int(arguments[0] + 0.5)
                         old_index = e + 1
                     relative_indent += 1
-
-        self.num_samples.pop()
