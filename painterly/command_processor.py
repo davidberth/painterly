@@ -12,9 +12,10 @@ class CommandProcessor:
     def __init__(self, opengl_ctx):
         self.opengl_ctx = opengl_ctx
         self.brush_stack = BrushStack()
+        self.sample_number = 0
 
     def set_sample_number(self, sample_number):
-        self.brush_stack.brush_context.sample_number = sample_number
+        self.sample_number = sample_number
 
     @property
     def num_samples(self):
@@ -22,7 +23,8 @@ class CommandProcessor:
 
     def canvas(self, arguments):
         """
-        Initializes the OpenGL window with the canvas size and antialiasing factor
+        Initializes the OpenGL window with the canvas size and antialiasing
+        factor
         :param arguments: the arguments from the painterly command
         """
 
@@ -62,6 +64,10 @@ class CommandProcessor:
         :param ctx: the current contex
         """
         # TODO we need a stroke or path class
+
+        # for i in self.brush_stack.brush_contexts:
+        #    print(i.sampler)
+
         x1, y1 = arguments[0]
         x2, y2 = arguments[1]
         path = dict()
@@ -80,7 +86,7 @@ class CommandProcessor:
             transform = [0.0, 0.0]
         else:
             transform = self.brush_stack.brush_context.sampler.get_coord(
-                self.brush_stack.brush_context.sample_number)
+                self.sample_number)
 
         self.brush_stack.brush_context.set_path_coords(
             paint.do_stroke(self.opengl_ctx, self.opengl_ctx.shader, path,
@@ -92,7 +98,15 @@ class CommandProcessor:
         Sets the current sampler object to the provided sampler type.
         :param arguments: the arguments from the painterly command
         """
+        self.brush_stack.push()
         self.brush_stack.brush_context.num_samples = int(arguments[0] + 0.5)
         self.brush_stack.brush_context.sampler = Sampler(
             self.brush_stack.brush_context.path_coords,
             self.brush_stack.brush_context.num_samples)
+
+    def rightbrace(self, arguments):
+        self.brush_stack.pop()
+
+    # def push(self, arguments):
+
+    # def pop(self, arguments):

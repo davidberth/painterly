@@ -1,6 +1,6 @@
 start: instruction+
 
-instruction: canvas | stroke | brush | sample | COMMENT | leftbracecommand | rightbracecommand | save
+instruction: canvas | stroke | brush | sample | COMMENT | rightbracecommand | save
 stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
 canvas: CANVASCOMMAND value value value
@@ -23,7 +23,6 @@ curve: "c" value -> curve
 wavy:  "w" value -> wavy
 
 // braces
-leftbracecommand: LEFTBRACE -> leftbrace
 rightbracecommand: RIGHTBRACE -> rightbrace
 
 CANVASCOMMAND: "canvas"
@@ -32,7 +31,6 @@ BRUSHCOMMAND: "brush"
 SAMPLECOMMAND: "sample"
 SAVECOMMAND: "save"
 COMMENT: "-" /[^\n]*/ NEWLINE
-LEFTBRACE: "["
 RIGHTBRACE: "]"
 uniform: "u" -> uniform
 normal: "n" -> normal

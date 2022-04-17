@@ -3,6 +3,8 @@ This library simulates Chinese style paintings with
 distance-based lighting from a custom recursive language"""
 from lark import Lark
 
+from command_processor import CommandProcessor
+from opengl_context import OpenglContext
 from script_preprocessor import ScriptPreprocessor
 from script_traverser import ScriptTraverser
 
@@ -23,19 +25,22 @@ def main():
     # initialize a context
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms
-    # opengl_ctx = openglContext()
+    opengl_ctx = OpenglContext()
 
-    # command_processor = CommandProcessor(opengl_ctx)
+    command_proc = CommandProcessor(opengl_ctx)
     # here we iterate through the transformed tree recursively
     # calling bracketed statement groups
     # we start with 1 sample from the root node
     script_traverser = ScriptTraverser()
-    # traverse recursively through the painterly script
-    for sample_number, command, arguments in script_traverser.traverse_script(
-            transformed_results.children):
-        print(sample_number, command, arguments)
+    # traverse recursively through the painterly script and process each
+    # command
+    for sample_number, level, command, arguments in \
+            script_traverser.traverse_script(
+                transformed_results.children):
+        command_proc.set_sample_number(sample_number)
+        print(sample_number, level, command, arguments)
 
-    # script_traverser.process_command_group(transformed_results.children, 0)
+        getattr(command_proc, command)(arguments)
 
 
 if __name__ == '__main__':

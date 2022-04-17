@@ -7,9 +7,9 @@ import quantity
 
 
 class ScriptTraverser:
-    open_command = 'leftbrace'
     close_command = 'rightbrace'
     sample_command = 'sample'
+    num_samples = [1]
 
     def traverse_script(self, commands, level=0, sample_number=0):
         """
@@ -21,6 +21,8 @@ class ScriptTraverser:
         old_index = 999999
         relative_indent = 0
 
+        self.num_samples.append(self.num_samples[-1])
+
         for e, instruction in enumerate(commands):
             sub_tree = instruction.children[0]
             if isinstance(sub_tree, Tree):
@@ -30,25 +32,24 @@ class ScriptTraverser:
                 if instruction_type == self.close_command:
                     relative_indent -= 1
 
-                    # call this function recursively on the
+                    # yield this function recursively on the
                     # collected commands
                     # within the inner indent
                     if relative_indent == 0:
-                        for sample_number in range(
-                                num_samples):
+                        for sample_number_inner in range(
+                                self.num_samples[-1]):
                             yield from self.traverse_script(
                                 commands[old_index:e],
-                                level + 1, sample_number)
-                        sample_number = 0
+                                level + 1, sample_number_inner)
 
                 if relative_indent == 0:
-                    yield [sample_number, instruction_type,
+                    yield [sample_number, level, instruction_type,
                            arguments]
 
                 if instruction_type == self.sample_command:
-                    num_samples = int(arguments[0] + 0.5)
-
-                if instruction_type == self.open_command:
                     if relative_indent == 0:
+                        self.num_samples[-1] = int(arguments[0] + 0.5)
                         old_index = e + 1
                     relative_indent += 1
+
+        self.num_samples.pop()
