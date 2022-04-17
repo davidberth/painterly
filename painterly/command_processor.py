@@ -106,7 +106,3 @@ class CommandProcessor:
 
     def rightbrace(self, arguments):
         self.brush_stack.pop()
-
-    # def push(self, arguments):
-
-    # def pop(self, arguments):

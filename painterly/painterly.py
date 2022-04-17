@@ -3,6 +3,7 @@ This library simulates Chinese style paintings with
 distance-based lighting from a custom recursive language"""
 from lark import Lark
 
+import indent_parser
 from command_processor import CommandProcessor
 from opengl_context import OpenglContext
 from script_preprocessor import ScriptPreprocessor
@@ -17,6 +18,12 @@ def main():
 
     with open('examples/example1.pnt', 'r') as file:
         text = file.read()
+
+    text = indent_parser.parse_indents(text)
+    print('indent processed script')
+    print('-----------------------')
+    print(text)
+    print('-----------------------')
     results = parser.parse(text)
 
     transformer = ScriptPreprocessor()
@@ -38,7 +45,6 @@ def main():
             script_traverser.traverse_script(
                 transformed_results.children):
         command_proc.set_sample_number(sample_number)
-        print(sample_number, level, command, arguments)
 
         getattr(command_proc, command)(arguments)
 

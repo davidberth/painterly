@@ -14,10 +14,5 @@ class BrushContext:
     sampler = Sampler()
     path_coords = (0, 0)
 
-    # def __init__(self):
-    #        self.brush = Brush()
-    #        self.sampler = Sampler()
-    #        self.path_coords = (0, 0)
-
     def set_path_coords(self, path):
         self.path_coords = path
