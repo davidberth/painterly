@@ -3,21 +3,22 @@ canvas 1900 700 4
 brush t0.01 h0.5 s0.4 b0.5 a0.8
 stroke 0 .2 1 .25 c0.03 w0.1
 sample 20
-    brush bu0.3:0.4 hu0.7:0.92 a0.7 t0.002 s0.8 t0.007
-    stroke 0 0 0 u.1:.8
-    sample u5:7
-        brush h0.5 b1.0 tu0.005:0.008 a0.4
-        stroke u-0.07:-0.015 0 u0.015:0.07 0 wu-0.02:0.02
+    {y} = (0.2:0.6)
+    brush b(0.3:0.4) h(0.7:0.92) a0.7 t0.002 s0.8 t0.007
+    stroke 0 0 0 {y}
+    sample (5:7)
+        brush h0.5 b1.0 t(0.005:0.008) a0.4
+        stroke (-0.07:-0.015) 0 (0.015:0.07) 0 w(-0.02:0.02)
         sample 6
-            brush hu0:1 b1.0 s1.0 t0.012 a.3
+            brush h(0:1) b1.0 s1.0 t0.012 a.3
             stroke 0 0 0 0.009
     brush b1.0 h0.0 s0.0 t0.003 a0.89
-    stroke -0.004 0 -0.004 u.1:.6
+    stroke -0.004 0 -0.004 {y}
     sample 3
         brush h0 t0.0007 s0 b0.5 a0.17
-        stroke u-0.2:-0.07 0.1 0.1 0.1
-sample 350
-    brush h.3 tu0.002:0.004 s0.7 b0.7 au0.2:0.5
-    stroke 0 0 u-0.01:0.01 u0.01:0.03
+        stroke (-0.2:-0.07) 0.1 0.1 0.1
+-sample 350
+-    brush h.3 t(0.002:0.004) s0.7 b0.7 a(0.2:0.5)
+-    stroke 0 0 (-0.01:0.01) (0.01:0.03)
 save output1
 

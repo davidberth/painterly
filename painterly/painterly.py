@@ -20,15 +20,11 @@ def main():
         text = file.read()
 
     text = indent_parser.parse_indents(text)
-    print('indent processed script')
-    print('-----------------------')
-    print(text)
-    print('-----------------------')
     results = parser.parse(text)
 
     transformer = ScriptPreprocessor()
-    transformed_results = transformer.transform(results)
 
+    transformed_results = transformer.transform(results)
     # initialize a context
     # This will hold the OpenGL buffer, window, shader, brush,
     # and current sampler used for transforms

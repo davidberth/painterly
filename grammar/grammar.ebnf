@@ -1,12 +1,11 @@
 start: instruction+
 
-instruction: canvas | stroke | brush | sample | COMMENT | rightbracecommand | save
-stroke: STROKECOMMAND coordinate coordinate [curve] [wavy] -> stroke
+instruction: canvas | stroke | brush | sample | assignment | COMMENT | rightbracecommand | save
+stroke: STROKECOMMAND value value value value [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
 canvas: CANVASCOMMAND value value value
 save: SAVECOMMAND CNAME -> save
-
-coordinate: value value  -> coordinate
+assignment: variable "=" value -> assignment
 brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
 sample: SAMPLECOMMAND value
 
@@ -25,6 +24,9 @@ wavy:  "w" value -> wavy
 // braces
 rightbracecommand: RIGHTBRACE -> rightbrace
 
+value: NUMBER | ("(" NUMBER ":" NUMBER")") | variable
+variable: "{" CNAME "}"
+
 CANVASCOMMAND: "canvas"
 STROKECOMMAND: "stroke"
 BRUSHCOMMAND: "brush"
@@ -32,11 +34,6 @@ SAMPLECOMMAND: "sample"
 SAVECOMMAND: "save"
 COMMENT: "-" /[^\n]*/ NEWLINE
 RIGHTBRACE: "]"
-uniform: "u" -> uniform
-normal: "n" -> normal
-value: NUMBER | ((uniform | normal) NUMBER ":" NUMBER)
-
-
 
 %import common.SIGNED_NUMBER -> NUMBER
 %import common.NEWLINE -> NEWLINE

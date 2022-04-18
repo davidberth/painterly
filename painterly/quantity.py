@@ -1,21 +1,23 @@
 """This module contains a simple class to define
 random or deterministic values"""
-
-from enum import Enum
+from dataclasses import dataclass
+from enum import Enum, auto
 
 import numpy as np
-from lark import Token
+
+variables = {}
 
 
 class ValueType(Enum):
-    real = 1
-    uniform = 2
-    normal = 3
+    real = auto()
+    uniform = auto()
+    normal = auto()
+    variable = auto()
 
 
 class Value:
     """
-    This class implements a determinstic or random value using
+    This class implements a deterministic or random value using
     several random distributions.
     """
 
@@ -23,6 +25,7 @@ class Value:
         self.value1 = float(value1)
         self.value2 = float(value2)
         self.value_type = value_type
+        self.label = ''
 
     @property
     def value(self):
@@ -31,40 +34,34 @@ class Value:
          deterministic value into a float
         :return: the computed float value
         """
+        global variables
+        value = 0.0
         match self.value_type:
             case ValueType.real:
-                return self.value1
+                value = self.value1
             case ValueType.uniform:
-                return np.random.uniform(self.value1, self.value2)
+                value = np.random.uniform(self.value1, self.value2)
             case ValueType.normal:
-                return np.random.normal(self.value1, self.value2)
-
-        return 0.0
-
-
-def get_values(arguments):
-    """
-    Instantiates the Value objects into actual floating point values.
-    :param arguments: the arguments to process
-    :return: the processed arguments with Value objects
-            turned into floating point numbers
-    """
-    realized = []
-    for argument in arguments[1:]:
-
-        if isinstance(argument, list):
-            realized_argument = []
-            for component in argument:
-                if isinstance(component, Value):
-                    # crystallize the random value
-                    realized_argument.append(component.value)
+                value = np.random.normal(self.value1, self.value2)
+            case ValueType.variable:
+                if self.label in variables:
+                    value = variables[self.label]
                 else:
-                    realized_argument.append(component)
-            realized.append(realized_argument)
-        else:
-            if isinstance(argument, Value):
-                realized.append(argument.value)
-            elif isinstance(argument, Token):
-                realized.append(argument.value)
+                    raise ValueError(f'Variable {self.label} not found. '
+                                     f'Please be sure to assign a value to '
+                                     f'{self.label} before attempting '
+                                     f'to use it.')
 
-    return realized
+        return InstantiatedValue(self.label, value)
+
+
+@dataclass
+class InstantiatedValue:
+    """
+    This is a simple class that holds an instantiated Value object.
+    This contains a label and a floating point value.
+    """
+    label: str = ''
+    value: float = 0.0
+
+

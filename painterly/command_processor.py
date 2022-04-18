@@ -1,6 +1,7 @@
 """
 This module contains functions to process each of the painterly commands.
 """
+
 from PIL import Image
 
 import paint
@@ -28,9 +29,9 @@ class CommandProcessor:
         :param arguments: the arguments from the painterly command
         """
 
-        width = int(arguments[0])
-        height = int(arguments[1])
-        scaling_factor = int(arguments[2])
+        width = int(arguments[0].value)
+        height = int(arguments[1].value)
+        scaling_factor = int(arguments[2].value)
         self.opengl_ctx.init(width, height, scaling_factor)
 
     def save(self, arguments):
@@ -54,7 +55,7 @@ class CommandProcessor:
         """
         for attribute in arguments:
             setattr(self.brush_stack.brush_context.brush,
-                    attribute[0], attribute[1])
+                    attribute.label, attribute.value)
 
     def stroke(self, arguments):
         """
@@ -68,8 +69,10 @@ class CommandProcessor:
         # for i in self.brush_stack.brush_contexts:
         #    print(i.sampler)
 
-        x1, y1 = arguments[0]
-        x2, y2 = arguments[1]
+        x1 = arguments[0].value
+        y1 = arguments[1].value
+        x2 = arguments[2].value
+        y2 = arguments[3].value
         path = dict()
         path['x1'] = x1
         path['x2'] = x2
@@ -77,10 +80,10 @@ class CommandProcessor:
         path['y2'] = y2
         path['wavy'] = None
         path['curve'] = None
-        if len(arguments) > 2:
-            path[arguments[2][0]] = arguments[2][1]
-        if len(arguments) > 3:
-            path[arguments[3][0]] = arguments[3][1]
+        if arguments[4] is not None:
+            path[arguments[4].label] = arguments[4].value
+        if arguments[5] is not None:
+            path[arguments[5].label] = arguments[5].value
 
         if self.brush_stack.brush_context.sampler is None:
             transform = [0.0, 0.0]
@@ -99,10 +102,14 @@ class CommandProcessor:
         :param arguments: the arguments from the painterly command
         """
         self.brush_stack.push()
-        self.brush_stack.brush_context.num_samples = int(arguments[0] + 0.5)
+        self.brush_stack.brush_context.num_samples = int(
+            arguments[0].value + 0.5)
         self.brush_stack.brush_context.sampler = Sampler(
             self.brush_stack.brush_context.path_coords,
             self.brush_stack.brush_context.num_samples)
+
+    def assignment(self, arguments):
+        pass
 
     def rightbrace(self, arguments):
         self.brush_stack.pop()
