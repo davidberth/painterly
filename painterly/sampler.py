@@ -13,14 +13,27 @@ class SamplerType(Enum):
 
 
 class Sampler:
+    left_margin = 0.0
+    right_margin = 0.0
+    offset = 0.0
 
-    def __init__(self, coords=((0, 0), (0, 0)), num_samples=1):
+    def __init__(self, coords=((0, 0), (0, 0)), num_samples=1, margin=None,
+                 left_margin=None, right_margin=None):
         self.num_samples = int(num_samples + 0.5)
         num_coords = len(coords[0])
         x, y = coords
+
+        if margin:
+            self.left_margin = margin
+            self.right_margin = margin
+        if left_margin:
+            self.left_margin = left_margin
+        if right_margin:
+            self.right_margin = right_margin
         self.x_coords = []
         self.y_coords = []
-        for t in np.linspace(0.0, 1.0, self.num_samples):
+        for t in np.linspace(self.left_margin, 1.0 - self.right_margin,
+                             self.num_samples):
             left_index = int(t * (num_coords - 1) - 0.01)
             right_index = left_index + 1
             inner_t = t * (num_coords - 1) - left_index

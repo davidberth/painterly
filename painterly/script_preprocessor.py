@@ -11,6 +11,10 @@ class ScriptPreprocessor(Transformer):
         tree[0].children[0].label = tree[0].data
         return tree[0].children[0]
 
+    def samplervalue(self, tree):
+        tree[0].children[0].label = tree[0].data
+        return tree[0].children[0]
+
     def curve(self, tree):
         tree[0].label = 'curve'
         return tree[0]
@@ -28,6 +32,12 @@ class ScriptPreprocessor(Transformer):
 
         if isinstance(tree[0], quantity.Value):
             # we already have a value object
+            # this should be a variable
+
+            # if it has a multiplier, we set this in the value object
+            if len(tree) == 2:
+                if tree[1] is not None:
+                    tree[0].multiplier = float(tree[1].children[0].value)
             return tree[0]
 
         if len(tree) == 1:

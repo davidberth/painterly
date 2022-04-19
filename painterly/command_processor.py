@@ -101,12 +101,19 @@ class CommandProcessor:
         Sets the current sampler object to the provided sampler type.
         :param arguments: the arguments from the painterly command
         """
+
+        sampler_params = {}
+        for argument in arguments[1:]:
+            if argument:
+                sampler_params[argument.label] = argument.value
+
         self.brush_stack.push()
         self.brush_stack.brush_context.num_samples = int(
             arguments[0].value + 0.5)
         self.brush_stack.brush_context.sampler = Sampler(
             self.brush_stack.brush_context.path_coords,
-            self.brush_stack.brush_context.num_samples)
+            self.brush_stack.brush_context.num_samples,
+            **sampler_params)
 
     def assignment(self, arguments):
         pass

@@ -6,8 +6,11 @@ brush: BRUSHCOMMAND (brushvalue)+  -> brush
 canvas: CANVASCOMMAND value value value
 save: SAVECOMMAND CNAME -> save
 assignment: variable "=" value -> assignment
+sample: SAMPLECOMMAND value (samplervalue)* -> sample
+
 brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
-sample: SAMPLECOMMAND value
+samplervalue: margin | left_margin | right_margin -> samplervalue
+
 
 // brush properties
 hue: "h" value -> hue
@@ -17,6 +20,11 @@ alpha: "a" value -> alpha
 thick: "t" value -> thick
 rough: "r" value -> rough
 
+// sample properties
+margin: "m" value -> margin
+left_margin: "lm" value -> left_margin
+right_margin: "rm" value -> right_margin
+
 // path properties
 curve: "c" value -> curve
 wavy:  "w" value -> wavy
@@ -24,8 +32,9 @@ wavy:  "w" value -> wavy
 // braces
 rightbracecommand: RIGHTBRACE -> rightbrace
 
-value: NUMBER | ("(" NUMBER ":" NUMBER")") | variable
+value: NUMBER | ("(" NUMBER "," NUMBER")") | variable [multiplier]
 variable: "{" CNAME "}"
+multiplier: "*" NUMBER
 
 CANVASCOMMAND: "canvas"
 STROKECOMMAND: "stroke"

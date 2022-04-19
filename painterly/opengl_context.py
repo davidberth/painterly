@@ -1,6 +1,6 @@
+import moderngl
 import numpy as np
 from perlin_numpy import generate_fractal_noise_2d
-import moderngl
 
 
 class OpenglContext:
@@ -40,7 +40,6 @@ class OpenglContext:
         self.ctx.enable(moderngl.BLEND)
 
     def init_perlin(self):
-        np.random.seed(0)
         print('generating noise')
         noise_texture = generate_fractal_noise_2d((256, 256), (8, 8), 5).astype(
             np.float32)

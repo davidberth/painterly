@@ -26,6 +26,7 @@ class Value:
         self.value2 = float(value2)
         self.value_type = value_type
         self.label = ''
+        self.multiplier = 1.0
 
     @property
     def value(self):
@@ -45,7 +46,7 @@ class Value:
                 value = np.random.normal(self.value1, self.value2)
             case ValueType.variable:
                 if self.label in variables:
-                    value = variables[self.label]
+                    value = variables[self.label] * self.multiplier
                 else:
                     raise ValueError(f'Variable {self.label} not found. '
                                      f'Please be sure to assign a value to '
@@ -63,5 +64,3 @@ class InstantiatedValue:
     """
     label: str = ''
     value: float = 0.0
-
-

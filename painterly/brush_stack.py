@@ -1,4 +1,5 @@
 import copy
+
 import brush_context
 
 
@@ -16,7 +17,9 @@ class BrushStack:
 
     def push(self):
         if len(self.brush_contexts) > 0:
+            brush = self.brush_context.brush
             self.brush_contexts.append(copy.deepcopy(self.brush_context))
+            self.brush_context.brush = copy.deepcopy(brush)
         else:
             print('push: the stack is currently empty')
 

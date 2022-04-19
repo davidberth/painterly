@@ -27,6 +27,7 @@ def do_stroke(opengl_ctx, shader, path, brush: Brush, transform):
         wavy = 0.0
 
     width = brush.thick
+    
     hue = brush.hue
     sat = brush.sat
     bright = brush.bright
