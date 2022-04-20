@@ -20,8 +20,7 @@ class Sampler:
     def __init__(self, coords=((0, 0), (0, 0)), num_samples=1, margin=None,
                  left_margin=None, right_margin=None):
         self.num_samples = int(num_samples + 0.5)
-        num_coords = len(coords[0])
-        x, y = coords
+        num_coords = len(coords)
 
         if margin:
             self.left_margin = margin
@@ -37,8 +36,8 @@ class Sampler:
             left_index = int(t * (num_coords - 1) - 0.01)
             right_index = left_index + 1
             inner_t = t * (num_coords - 1) - left_index
-            ix1, iy1 = x[left_index], y[left_index]
-            ix2, iy2 = x[right_index], y[right_index]
+            ix1, iy1 = coords[left_index]
+            ix2, iy2 = coords[right_index]
             self.x_coords.append(ix1 * (1 - inner_t) + ix2 * inner_t)
             self.y_coords.append(iy1 * (1 - inner_t) + iy2 * inner_t)
 

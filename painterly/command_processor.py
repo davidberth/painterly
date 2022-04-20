@@ -4,9 +4,10 @@ This module contains functions to process each of the painterly commands.
 
 from PIL import Image
 
-import paint
 from brush_stack import BrushStack
+from path import Path
 from sampler import Sampler
+from strokes import Strokes
 
 
 class CommandProcessor:
@@ -14,6 +15,7 @@ class CommandProcessor:
         self.opengl_ctx = opengl_ctx
         self.brush_stack = BrushStack()
         self.sample_number = 0
+        self.strokes = Strokes()
 
     def set_sample_number(self, sample_number):
         self.sample_number = sample_number
@@ -35,6 +37,9 @@ class CommandProcessor:
         self.opengl_ctx.init(width, height, scaling_factor)
 
     def save(self, arguments):
+        # render the scene
+        self.strokes.render(self.opengl_ctx)
+
         # clean up the context
         name = arguments[0]
         self.opengl_ctx.ctx.finish()
@@ -64,26 +69,6 @@ class CommandProcessor:
         :param arguments: the arguments from the painterly command
         :param ctx: the current contex
         """
-        # TODO we need a stroke or path class
-
-        # for i in self.brush_stack.brush_contexts:
-        #    print(i.sampler)
-
-        x1 = arguments[0].value
-        y1 = arguments[1].value
-        x2 = arguments[2].value
-        y2 = arguments[3].value
-        path = dict()
-        path['x1'] = x1
-        path['x2'] = x2
-        path['y1'] = y1
-        path['y2'] = y2
-        path['wavy'] = None
-        path['curve'] = None
-        if arguments[4] is not None:
-            path[arguments[4].label] = arguments[4].value
-        if arguments[5] is not None:
-            path[arguments[5].label] = arguments[5].value
 
         if self.brush_stack.brush_context.sampler is None:
             transform = [0.0, 0.0]
@@ -91,10 +76,23 @@ class CommandProcessor:
             transform = self.brush_stack.brush_context.sampler.get_coord(
                 self.sample_number)
 
-        self.brush_stack.brush_context.set_path_coords(
-            paint.do_stroke(self.opengl_ctx, self.opengl_ctx.shader, path,
-                            self.brush_stack.brush_context.brush,
-                            transform))
+        stroke_path = Path()
+        stroke_path.x1 = arguments[0].value + transform[0]
+        stroke_path.y1 = arguments[1].value + transform[1]
+        stroke_path.x2 = arguments[2].value + transform[0]
+        stroke_path.y2 = arguments[3].value + transform[1]
+
+        if arguments[4] is not None:
+            stroke_path.curve = arguments[4].value
+        if arguments[5] is not None:
+            stroke_path.wavy = arguments[5].value
+
+        path_coords = stroke_path.get_path_vertices()
+
+        self.strokes.add_stroke(path_coords,
+                                self.brush_stack.brush_context.brush)
+
+        self.brush_stack.brush_context.set_path_coords(path_coords)
 
     def sample(self, arguments):
         """
