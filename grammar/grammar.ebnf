@@ -4,13 +4,13 @@ instruction: canvas | stroke | brush | sample | assignment
 | COMMENT | rightbracecommand | light | save
 stroke: STROKECOMMAND value value value value [curve] [wavy] -> stroke
 brush: BRUSHCOMMAND (brushvalue)+  -> brush
-canvas: CANVASCOMMAND value value value
+canvas: CANVASCOMMAND value value value value value value
 save: SAVECOMMAND CNAME -> save
 assignment: variable "=" value -> assignment
 sample: SAMPLECOMMAND value (samplervalue)* -> sample
 light: LIGHTCOMMAND value value value -> light
 
-brushvalue: hue | sat | bright | alpha | thick | rough -> brushvalue
+brushvalue: hue | sat | bright | alpha | thick | rough | consistency -> brushvalue
 samplervalue: margin | left_margin | right_margin -> samplervalue
 
 
@@ -21,6 +21,7 @@ bright: "b" value -> bright
 alpha: "a" value -> alpha
 thick: "t" value -> thick
 rough: "r" value -> rough
+consistency: "q" value -> consistency
 
 // sample properties
 margin: "m" value -> margin

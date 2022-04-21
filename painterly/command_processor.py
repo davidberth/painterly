@@ -36,7 +36,10 @@ class CommandProcessor:
         width = int(arguments[0].value)
         height = int(arguments[1].value)
         scaling_factor = int(arguments[2].value)
-        self.opengl_ctx.init(width, height, scaling_factor)
+        red = arguments[3].value
+        green = arguments[4].value
+        blue = arguments[5].value
+        self.opengl_ctx.init(width, height, scaling_factor, red, green, blue)
 
     def save(self, arguments):
         # render the scene

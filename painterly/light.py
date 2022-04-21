@@ -18,5 +18,5 @@ class Light:
     def compute_impact(self, tx, ty):
         dis = np.sqrt((tx - self.x) ** 2 + (ty - self.y) ** 2)
         dis /= self.intensity
-        impact = max(1.0 - dis, 0.0) / 3.0
+        impact = max(1.0 - dis, 0.0) / 2.0
         return impact

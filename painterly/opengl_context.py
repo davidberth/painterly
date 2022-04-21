@@ -10,7 +10,7 @@ class OpenglContext:
         self.fbo = None
         self.ctx = None
 
-    def init(self, width, height, scaling_factor):
+    def init(self, width, height, scaling_factor, red, green, blue):
         # here we set up the OpenGL context and canvas
         self.target_size = width, height
         self.scaling_factor = scaling_factor
@@ -23,7 +23,7 @@ class OpenglContext:
         self.fbo = self.ctx.simple_framebuffer(
             self.buffer_size, components=4)
         self.fbo.use()
-        self.fbo.clear(0.8, 0.8, 0.8, 1.0)
+        self.fbo.clear(red, green, blue, 1.0)
 
         # generate the fractal noise texture
         self.init_perlin()

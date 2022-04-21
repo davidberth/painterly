@@ -18,4 +18,4 @@ class Strokes:
 
     def render(self, opengl_context, lights):
         for i in self.strokes:
-            render.do_stroke(opengl_context, i[0], i[1], 0.4, lights)
+            render.do_stroke(opengl_context, i[0], i[1], 0.1, lights)

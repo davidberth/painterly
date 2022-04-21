@@ -17,20 +17,20 @@ def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
     hue = brush.hue
     sat = brush.sat
     bright = brush.bright
-    alpha = brush.alpha * ambient
+    alpha = brush.alpha
 
     ctx = opengl_ctx.ctx
     shader = opengl_ctx.shader
 
     # TODO these should be looked up beforehand
     noise_color_scale = shader['noise_color_scale']
-    noise_color_scale.value = brush.consistency
+    noise_color_scale.value = 0.5
 
     length_distance_scale = shader['length_distance_scale']
-    length_distance_scale.value = 1.0 * 1.6 / width ** .1
+    length_distance_scale.value = 2.0 * brush.consistency * 1.6 / width ** .1
 
     side_distance_scale = shader['side_distance_scale']
-    side_distance_scale.value = 40.0
+    side_distance_scale.value = 80.0 * brush.consistency
 
     opengl_ctx.texture.use(location=0)
 
@@ -74,19 +74,19 @@ def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
         # compute the light factor - this will be expensive
         # (done in shader eventually)
 
-        light_factor = 0.0
-        for light in lights.lights:
-            light_factor += light.compute_impact(x, y)
+        # light_factor = 0.0
+        # for light in lights.lights:
+        #    light_factor += light.compute_impact(x, y)
 
-        alpha_light = min(alpha + light_factor, 1.0)
+        # bright_light = min(bright + light_factor, 1.0)
         red, green, blue = colorsys.hsv_to_rgb(hue, sat,
                                                bright)
 
         vertex_list.append(
-            [lx1, ly1, red, green, blue, alpha_light, tex_x, tex_y_offset, t,
+            [lx1, ly1, red, green, blue, alpha, tex_x, tex_y_offset, t,
              0.0])
         vertex_list.append(
-            [lx2, ly2, red, green, blue, alpha_light, tex_x, tex_y_end, t, 1.0])
+            [lx2, ly2, red, green, blue, alpha, tex_x, tex_y_end, t, 1.0])
 
     vertices = np.array(vertex_list, dtype='f4')
 
