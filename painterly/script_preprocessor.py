@@ -8,24 +8,24 @@ class ScriptPreprocessor(Transformer):
         super().__init__()
 
     def brushvalue(self, tree):
-        tree[0].children[0].label = tree[0].data
+        tree[0].children[0].tag = tree[0].data
         return tree[0].children[0]
 
     def samplervalue(self, tree):
-        tree[0].children[0].label = tree[0].data
+        tree[0].children[0].tag = tree[0].data
         return tree[0].children[0]
 
     def curve(self, tree):
-        tree[0].label = 'curve'
+        tree[0].tag = 'curve'
         return tree[0]
 
     def wavy(self, tree):
-        tree[0].label = 'wavy'
+        tree[0].tag = 'wavy'
         return tree[0]
 
     def variable(self, tree):
         variable = quantity.Value(0.0, 0.0, quantity.ValueType.variable)
-        variable.label = tree[0]
+        variable.name = tree[0]
         return variable
 
     def value(self, tree):

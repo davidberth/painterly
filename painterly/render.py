@@ -11,7 +11,7 @@ height_texture_scale = 0.2
 length_texture_scale = 2.0
 
 
-def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
+def do_stroke(opengl_ctx, coords, brush: Brush):
     width = brush.thick
 
     hue = brush.hue
@@ -20,7 +20,7 @@ def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
     alpha = brush.alpha
 
     ctx = opengl_ctx.ctx
-    shader = opengl_ctx.shader
+    shader = opengl_ctx.brush_shader
 
     # TODO these should be looked up beforehand
     noise_color_scale = shader['noise_color_scale']
@@ -44,7 +44,7 @@ def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
     orthogonal_direction = np.array(
         (-normalized_direction[1], normalized_direction[0]))
 
-    width_factor = width / 1.5
+    width_factor = width / 1.8
     tex_x_offset = np.random.uniform(0.0, 1.0 - stroke_distance)
     tex_y_offset = np.random.uniform(0.0, 1.0 - width)
     tex_x_end = tex_x_offset + 0.7 * height_texture_scale
@@ -71,14 +71,6 @@ def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
         lx2, ly2 = x + orthogonal_direction[0] * width_factor, \
                    y + orthogonal_direction[1] * width_factor
 
-        # compute the light factor - this will be expensive
-        # (done in shader eventually)
-
-        # light_factor = 0.0
-        # for light in lights.lights:
-        #    light_factor += light.compute_impact(x, y)
-
-        # bright_light = min(bright + light_factor, 1.0)
         red, green, blue = colorsys.hsv_to_rgb(hue, sat,
                                                bright)
 

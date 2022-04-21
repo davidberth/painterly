@@ -43,7 +43,8 @@ class CommandProcessor:
 
     def save(self, arguments):
         # render the scene
-        self.strokes.render(self.opengl_ctx, self.lights)
+        self.strokes.render(self.opengl_ctx)
+        self.lights.render(self.opengl_ctx)
 
         # clean up the context
         name = arguments[0]

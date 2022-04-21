@@ -25,7 +25,8 @@ class Value:
         self.value1 = float(value1)
         self.value2 = float(value2)
         self.value_type = value_type
-        self.label = ''
+        self.tag = ''
+        self.name = ''
         self.multiplier = 1.0
 
     @property
@@ -45,15 +46,16 @@ class Value:
             case ValueType.normal:
                 value = np.random.normal(self.value1, self.value2)
             case ValueType.variable:
-                if self.label in variables:
-                    value = variables[self.label] * self.multiplier
+                if self.name in variables:
+                    value = variables[self.name] * self.multiplier
                 else:
-                    raise ValueError(f'Variable {self.label} not found. '
+                    print(self.name)
+                    raise ValueError(f'Variable {self.name} not found. '
                                      f'Please be sure to assign a value to '
-                                     f'{self.label} before attempting '
+                                     f'{self.name} before attempting '
                                      f'to use it.')
 
-        return InstantiatedValue(self.label, value)
+        return InstantiatedValue(self.tag, value)
 
 
 @dataclass

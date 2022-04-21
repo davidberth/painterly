@@ -1,4 +1,5 @@
 #version 430
+
 in vec4 color;
 in vec2 v_text;
 in vec2 v_stroke;
@@ -19,7 +20,7 @@ void main() {
 
     float edge_distance = min(length_distance, side_distance);
     if (edge_distance > edge_check)
-        fragColor = color + vec4(noise, noise, noise, 0.0);
+    fragColor = color + vec4(noise, noise, noise, 0.0);
     else
-        discard;
+    discard;
 }

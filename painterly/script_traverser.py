@@ -42,7 +42,7 @@ class ScriptTraverser:
                                 level + 1, sample_number_inner)
 
                 if instruction_type == self.ASSIGNMENT_COMMAND:
-                    variable_name = sub_tree.children[0].label
+                    variable_name = sub_tree.children[0].name
                     value = arguments[0].value
                     quantity.variables[variable_name] = value
 

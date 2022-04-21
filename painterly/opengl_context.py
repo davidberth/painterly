@@ -6,7 +6,8 @@ from perlin_numpy import generate_fractal_noise_2d
 class OpenglContext:
     def __init__(self):
         self.opengl_buffer = None
-        self.shader = None
+        self.brush_shader = None
+        self.pointlight_shader = None
         self.fbo = None
         self.ctx = None
 
@@ -28,15 +29,26 @@ class OpenglContext:
         # generate the fractal noise texture
         self.init_perlin()
 
-        with open("shaders/vertex.glsl", "r",
+        with open("shaders/brush_vertex.glsl", "r",
                   encoding="utf-8") as vertex_shader_file:
             vertex_shader = vertex_shader_file.read()
-        with open("shaders/fragment.glsl", "r",
+        with open("shaders/brush_fragment.glsl", "r",
                   encoding="utf-8") as fragment_shader_file:
             fragment_shader = fragment_shader_file.read()
 
-        self.shader = self.ctx.program(vertex_shader=vertex_shader,
-                                       fragment_shader=fragment_shader)
+        self.brush_shader = self.ctx.program(vertex_shader=vertex_shader,
+                                             fragment_shader=fragment_shader)
+
+        with open("shaders/pointlight_vertex.glsl", "r",
+                  encoding="utf-8") as vertex_shader_file:
+            vertex_shader = vertex_shader_file.read()
+        with open("shaders/pointlight_fragment.glsl", "r",
+                  encoding="utf-8") as fragment_shader_file:
+            fragment_shader = fragment_shader_file.read()
+
+        self.pointlight_shader = self.ctx.program(vertex_shader=vertex_shader,
+                                                  fragment_shader=fragment_shader)
+
         self.ctx.enable(moderngl.BLEND)
 
     def init_perlin(self):

@@ -16,6 +16,6 @@ class Strokes:
         self.strokes.append((stroke_path, copy.copy(brush)))
         self.num_strokes = len(self.strokes)
 
-    def render(self, opengl_context, lights):
+    def render(self, opengl_context):
         for i in self.strokes:
-            render.do_stroke(opengl_context, i[0], i[1], 0.1, lights)
+            render.do_stroke(opengl_context, i[0], i[1])
