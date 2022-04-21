@@ -11,15 +11,14 @@ height_texture_scale = 0.2
 length_texture_scale = 2.0
 
 
-def do_stroke(opengl_ctx, coords, brush: Brush):
+def do_stroke(opengl_ctx, coords, brush: Brush, ambient, lights):
     width = brush.thick
 
     hue = brush.hue
     sat = brush.sat
     bright = brush.bright
-    alpha = brush.alpha
+    alpha = brush.alpha * ambient
 
-    red, green, blue = colorsys.hsv_to_rgb(hue, sat, bright)
     ctx = opengl_ctx.ctx
     shader = opengl_ctx.shader
 
@@ -54,6 +53,16 @@ def do_stroke(opengl_ctx, coords, brush: Brush):
     vertex_list = []
 
     for e, (x, y) in enumerate(coords):
+
+        if e < len(coords) - 1:
+            x2, y2 = coords[e + 1]
+            normalized_direction = x2 - x, y2 - y
+            stroke_distance = np.sqrt(
+                normalized_direction[0] ** 2 + normalized_direction[1] ** 2)
+            normalized_direction /= stroke_distance
+            orthogonal_direction = np.array(
+                (-normalized_direction[1], normalized_direction[0]))
+
         t = e / float(len(coords) - 1)
         tex_x = tex_x_offset * (1 - t) + tex_x_end * t
         lx1, ly1 = x - orthogonal_direction[0] * width_factor, \
@@ -62,10 +71,22 @@ def do_stroke(opengl_ctx, coords, brush: Brush):
         lx2, ly2 = x + orthogonal_direction[0] * width_factor, \
                    y + orthogonal_direction[1] * width_factor
 
+        # compute the light factor - this will be expensive
+        # (done in shader eventually)
+
+        light_factor = 0.0
+        for light in lights.lights:
+            light_factor += light.compute_impact(x, y)
+
+        alpha_light = min(alpha + light_factor, 1.0)
+        red, green, blue = colorsys.hsv_to_rgb(hue, sat,
+                                               bright)
+
         vertex_list.append(
-            [lx1, ly1, red, green, blue, alpha, tex_x, tex_y_offset, t, 0.0])
+            [lx1, ly1, red, green, blue, alpha_light, tex_x, tex_y_offset, t,
+             0.0])
         vertex_list.append(
-            [lx2, ly2, red, green, blue, alpha, tex_x, tex_y_end, t, 1.0])
+            [lx2, ly2, red, green, blue, alpha_light, tex_x, tex_y_end, t, 1.0])
 
     vertices = np.array(vertex_list, dtype='f4')
 

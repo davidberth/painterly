@@ -5,6 +5,7 @@ This module contains functions to process each of the painterly commands.
 from PIL import Image
 
 from brush_stack import BrushStack
+from lights import Lights
 from path import Path
 from sampler import Sampler
 from strokes import Strokes
@@ -16,6 +17,7 @@ class CommandProcessor:
         self.brush_stack = BrushStack()
         self.sample_number = 0
         self.strokes = Strokes()
+        self.lights = Lights()
 
     def set_sample_number(self, sample_number):
         self.sample_number = sample_number
@@ -38,7 +40,7 @@ class CommandProcessor:
 
     def save(self, arguments):
         # render the scene
-        self.strokes.render(self.opengl_ctx)
+        self.strokes.render(self.opengl_ctx, self.lights)
 
         # clean up the context
         name = arguments[0]
@@ -61,6 +63,16 @@ class CommandProcessor:
         for attribute in arguments:
             setattr(self.brush_stack.brush_context.brush,
                     attribute.label, attribute.value)
+
+    def light(self, arguments):
+        if self.brush_stack.brush_context.sampler is None:
+            transform = [0.0, 0.0]
+        else:
+            transform = self.brush_stack.brush_context.sampler.get_coord(
+                self.sample_number)
+        self.lights.add_light(arguments[0].value + transform[0],
+                              arguments[1].value + transform[1],
+                              arguments[2].value)
 
     def stroke(self, arguments):
         """
