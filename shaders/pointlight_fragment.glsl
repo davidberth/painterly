@@ -9,5 +9,6 @@ void main() {
     // compute the distance from the center based don the v_text coordinates
     float dis = length(v_text);
     float impact = 1.0 - min(dis, 1.0);
+    impact = int(5 * impact) / 5.0;
     fragColor = vec4(color.x, color.y, color.z, color.w * impact);
 }

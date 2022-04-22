@@ -76,7 +76,9 @@ class CommandProcessor:
                 self.sample_number)
         self.lights.add_light(arguments[0].value + transform[0],
                               arguments[1].value + transform[1],
-                              arguments[2].value)
+                              arguments[2].value, arguments[3].value,
+                              arguments[4].value, arguments[5].value,
+                              arguments[6].value)
 
     def stroke(self, arguments):
         """
@@ -86,17 +88,22 @@ class CommandProcessor:
         :param ctx: the current contex
         """
 
-        if self.brush_stack.brush_context.sampler is None:
-            transform = [0.0, 0.0]
-        else:
-            transform = self.brush_stack.brush_context.sampler.get_coord(
-                self.sample_number)
+        x1 = arguments[0].value
+        y1 = arguments[1].value
+        x2 = arguments[2].value
+        y2 = arguments[3].value
+
+        if self.brush_stack.brush_context.sampler is not None:
+            x1, y1 = self.brush_stack.brush_context.sampler.transform(x1, y1,
+                                                                      self.sample_number)
+            x2, y2 = self.brush_stack.brush_context.sampler.transform(x2, y2,
+                                                                      self.sample_number)
 
         stroke_path = Path()
-        stroke_path.x1 = arguments[0].value + transform[0]
-        stroke_path.y1 = arguments[1].value + transform[1]
-        stroke_path.x2 = arguments[2].value + transform[0]
-        stroke_path.y2 = arguments[3].value + transform[1]
+        stroke_path.x1 = x1
+        stroke_path.y1 = y1
+        stroke_path.x2 = x2
+        stroke_path.y2 = y2
 
         if arguments[4] is not None:
             stroke_path.curve = arguments[4].value

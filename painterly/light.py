@@ -14,7 +14,8 @@ class Light:
     y: float = 0.0
     hue: float = 0.0
     sat: float = 0.0
-    bright: float = 0.0
+    bright: float = 1.0
+    alpha: float = 0.2
     radius: float = 0.0
     falloff: float = 1.0
 
@@ -23,11 +24,21 @@ class Light:
                                                self.sat,
                                                self.bright)
 
+        y_radius = self.radius * ctx.aspect_ratio
+
         vertex_list = [
-            [self.x - 0.02, self.y - 0.04, red, green, blue, 0.15, -1.0, -1.0],
-            [self.x - 0.02, self.y + 0.04, red, green, blue, 0.15, -1.0, 1.0],
-            [self.x + 0.02, self.y - 0.04, red, green, blue, 0.15, 1.0, -1.0],
-            [self.x + 0.02, self.y + 0.04, red, green, blue, 0.15, 1.0, 1.0]]
+            [self.x - self.radius, self.y - y_radius, red, green, blue,
+             self.alpha, -1.0,
+             -1.0],
+            [self.x - self.radius, self.y + y_radius, red, green, blue,
+             self.alpha, -1.0,
+             1.0],
+            [self.x + self.radius, self.y - y_radius, red, green, blue,
+             self.alpha, 1.0,
+             -1.0],
+            [self.x + self.radius, self.y + y_radius, red, green, blue,
+             self.alpha, 1.0,
+             1.0]]
 
         vertices = np.array(vertex_list, dtype='f4')
 

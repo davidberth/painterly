@@ -8,10 +8,10 @@ canvas: CANVASCOMMAND value value value value value value
 save: SAVECOMMAND CNAME -> save
 assignment: variable "=" value -> assignment
 sample: SAMPLECOMMAND value (samplervalue)* -> sample
-light: LIGHTCOMMAND value value value -> light
+light: LIGHTCOMMAND value value value value value value value -> light
 
 brushvalue: hue | sat | bright | alpha | thick | rough | consistency -> brushvalue
-samplervalue: margin | left_margin | right_margin -> samplervalue
+samplervalue: margin | left_margin | right_margin | rotate -> samplervalue
 
 
 // brush properties
@@ -27,6 +27,7 @@ consistency: "q" value -> consistency
 margin: "m" value -> margin
 left_margin: "lm" value -> left_margin
 right_margin: "rm" value -> right_margin
+rotate: "rt" value -> rotate
 
 // path properties
 curve: "c" value -> curve

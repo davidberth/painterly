@@ -10,6 +10,7 @@ class OpenglContext:
         self.pointlight_shader = None
         self.fbo = None
         self.ctx = None
+        self.aspect_ratio = 1.0
 
     def init(self, width, height, scaling_factor, red, green, blue):
         # here we set up the OpenGL context and canvas
@@ -49,6 +50,7 @@ class OpenglContext:
         self.pointlight_shader = self.ctx.program(vertex_shader=vertex_shader,
                                                   fragment_shader=fragment_shader)
 
+        self.aspect_ratio = width / height
         self.ctx.enable(moderngl.BLEND)
 
     def init_perlin(self):
