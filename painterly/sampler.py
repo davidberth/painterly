@@ -17,6 +17,8 @@ class Sampler:
     right_margin = 0.0
     offset = 0.0
     rotate = 0.0
+    rotation_stack = 0.0
+    current_rotation = 0.0
 
     def __init__(self, coords=((0, 0), (0, 0)), num_samples=1, margin=None,
                  left_margin=None, right_margin=None, rotate=0.0):
@@ -54,12 +56,13 @@ class Sampler:
 
     def transform(self, x, y, coord_number):
         bx, by = self.get_coord(coord_number)
-        angle = self.get_angle(coord_number) * self.rotate
+        angle = self.get_angle(coord_number) * self.rotate + self.rotation_stack
         cos_angle = np.cos(angle)
         sin_angle = np.sin(angle)
 
         nx = bx + x * cos_angle - y * sin_angle
         ny = by + x * sin_angle + y * cos_angle
+        self.current_rotation = angle
         return nx, ny
 
     def __repr__(self):

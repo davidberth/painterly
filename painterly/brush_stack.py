@@ -20,6 +20,13 @@ class BrushStack:
             brush = self.brush_context.brush
             self.brush_contexts.append(copy.deepcopy(self.brush_context))
             self.brush_context.brush = copy.deepcopy(brush)
+            # here we set the rotation of the sample as an accumulation of
+            # all rotations in the stack of previous samplers.
+            rotation = 0.0
+            for bcontext in self.brush_contexts[:-1]:
+                sampler = bcontext.sampler
+                rotation += sampler.current_rotation * sampler.rotate
+            self.brush_context.sampler.rotation_stack = rotation
         else:
             print('push: the stack is currently empty')
 

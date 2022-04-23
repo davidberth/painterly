@@ -11,11 +11,11 @@ sample 7 lm0.1 rm0.15 rt1
     brush t0.004 h(0.0,1.0) s0.8 b0.1 a0.9 q0.5
     {x2} = {x}*.5
     stroke {x2}*-1   0   {x2}*-1   {y}
-    sample 5 lm0.1 rm0.1 rt1
+    sample 5 lm0.1 rm0.1
         brush t0.004 h1 s0.2
         stroke 0 0 {x} 0
     stroke {x2}*-1   {y} {x2}      {y}
-    sample 4 m0.2 rt1
+    sample 4 m0.2
         brush a0
         stroke 0 0 0 {y}*-1.0
         sample 4 m0.2
@@ -29,7 +29,7 @@ sample 7 lm0.1 rm0.15 rt1
         stroke -0.005 {k} 0.005 {k}
         light 0 {k} 1 1 1 0.1 0.015
     stroke {x2}      {y} {x2}      0
-sample 19 m.1 rt1
+sample 19 m.1 rt2
     brush t0.001 h0 b0 s0 a1
     {yy} = (0.1, 0.2)
     stroke 0 0 0 {yy}

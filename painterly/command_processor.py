@@ -69,13 +69,15 @@ class CommandProcessor:
                     attribute.label, attribute.value)
 
     def light(self, arguments):
-        if self.brush_stack.brush_context.sampler is None:
-            transform = [0.0, 0.0]
-        else:
-            transform = self.brush_stack.brush_context.sampler.get_coord(
-                self.sample_number)
-        self.lights.add_light(arguments[0].value + transform[0],
-                              arguments[1].value + transform[1],
+
+        x = arguments[0].value
+        y = arguments[1].value
+
+        if self.brush_stack.brush_context.sampler is not None:
+            x, y = self.brush_stack.brush_context.sampler.transform(x, y,
+                                                                    self.sample_number)
+
+        self.lights.add_light(x, y,
                               arguments[2].value, arguments[3].value,
                               arguments[4].value, arguments[5].value,
                               arguments[6].value)
