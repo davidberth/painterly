@@ -16,13 +16,14 @@ class Sampler:
     left_margin = 0.0
     right_margin = 0.0
     offset = 0.0
-    rotate = 0.0
+    rotate = 1.0
     rotation_stack = 0.0
     current_rotation = 0.0
 
     def __init__(self, coords=((0, 0), (0, 0)), num_samples=1, margin=None,
-                 left_margin=None, right_margin=None, rotate=0.0):
-        self.num_samples = int(num_samples + 0.5)
+                 left_margin=None, right_margin=None, rotate=1.0,
+                 num_rotations=1, rotation_increment=10.0):
+        self.num_samples = int(num_samples + 0.5) * int(num_rotations + 0.5)
         num_coords = len(coords)
 
         if margin:
@@ -36,17 +37,22 @@ class Sampler:
         self.y_coords = []
         self.angles = []
         self.rotate = rotate
+        self.num_rotations = int(num_rotations + 0.5)
+        self.rotation_increment = rotation_increment
         for t in np.linspace(self.left_margin, 1.0 - self.right_margin,
                              self.num_samples):
+
             left_index = int(t * (num_coords - 1) - 0.01)
             right_index = left_index + 1
             inner_t = t * (num_coords - 1) - left_index
             ix1, iy1 = coords[left_index]
             ix2, iy2 = coords[right_index]
             angle = np.arctan2(iy2 - iy1, ix2 - ix1)
-            self.x_coords.append(ix1 * (1 - inner_t) + ix2 * inner_t)
-            self.y_coords.append(iy1 * (1 - inner_t) + iy2 * inner_t)
-            self.angles.append(angle)
+            for a in range(self.num_rotations):
+                angle_adjust = self.rotation_increment * float(a)
+                self.x_coords.append(ix1 * (1 - inner_t) + ix2 * inner_t)
+                self.y_coords.append(iy1 * (1 - inner_t) + iy2 * inner_t)
+                self.angles.append(angle + angle_adjust)
 
     def get_coord(self, coord_number: int):
         return self.x_coords[coord_number], self.y_coords[coord_number]

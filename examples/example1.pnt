@@ -1,47 +1,9 @@
 - D. Berthiaume 4/9/2022
 canvas 1000 1000 2 0.9 0.9 0.9
-stroke -0.01 .1 1.01 0.1000001 w0.05
-sample 7 lm0.1 rm0.15 rt1
-    {y} = (0.3, 0.5)
-    {x} = (0.05, 0.07)
-    brush t{x} a1 b0.9 s0 h0 q1.8
-    stroke 0 0 0 {y}
-    brush t{x} a0.05 b0.4 q1.5 s0.7 h(0.0, 1.0)
-    stroke 0 0 0 {y}
-    brush t0.004 h(0.0,1.0) s0.8 b0.1 a0.9 q0.5
-    {x2} = {x}*.5
-    stroke {x2}*-1   0   {x2}*-1   {y}
-    sample 5 lm0.1 rm0.1 rt1
-        brush t0.004 h1 s0.2
-        stroke 0 0 {x} 0
-    stroke {x2}*-1   {y} {x2}      {y}
-    sample 4 m0.2 rt1
-        brush a0
-        stroke 0 0 0 {y}*-1.0
-        sample 4 m0.2
-            brush t0.005 b1 s1 a0.95 h(0.6,0.7)
-            stroke 0 0 0 -0.014
-    sample 6 m0.1 rt1
-        brush a0.9 t0.002 h0 s1 b0.1
-        {k} = (0.01, 0.1)
-        stroke 0 0 0 {k}
-        brush a0.9 t0.01 h(0,0.6) s1 b1
-        stroke -0.005 {k} 0.005 {k}
-        light 0 {k} 1 1 1 0.1 0.015
-    stroke {x2}      {y} {x2}      0
-sample 19 m.1 rt1
-    brush t0.001 h0 b0 s0 a1
-    {yy} = (0.1, 0.2)
-    stroke 0 0 0 {yy}
-    brush t0.01 h.2 b1 s0.8 a0.5
-    stroke -0.0025 {yy} 0.0025 {yy}
-    brush t0.02 h.2 b1 s0.8 a0.2
-    stroke -0.005 {yy} 0.005 {yy}
-    light 0 {yy} 0 1 1 0.1 0.03
-sample 300
-    brush t0.002 h0.3 b0.1 s1
-    stroke 0 0 (-0.005,0.005) (0.009, 0.02)
-save output0
+brush t0.01 h0.4 s0.9 b0.9 a0.95 q0.4
+sample 1 nr20 rt0.1
+    stroke 0 0 0 .1
+save tree
 
 
 

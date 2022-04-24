@@ -12,7 +12,7 @@ from sampler import Sampler
 class BrushContext:
     brush = Brush()
     sampler = Sampler()
-    path_coords = (0, 0)
+    path_coords = [(0.499, 0.5), (0.501, 0.5)]
 
     def set_path_coords(self, path):
         self.path_coords = path

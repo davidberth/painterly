@@ -53,6 +53,9 @@ class ScriptTraverser:
                 if instruction_type == self.SAMPLE_COMMAND:
                     if relative_indent == 0:
                         num_samples = int(arguments[0].value + 0.5)
+                        for argument in arguments[1:]:
+                            if argument.label == 'num_rotations':
+                                num_samples *= int(argument.value + 0.5)
                         old_index = e + 1
                     relative_indent += 1
 
