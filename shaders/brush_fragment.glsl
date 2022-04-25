@@ -15,6 +15,8 @@ uniform float length_distance_scale;
 uniform float side_distance_scale;
 uniform float num_lights;
 uniform vec2  light_positions[MAX_TOTAL_LIGHTS];
+uniform vec3  light_intensities[MAX_TOTAL_LIGHTS];
+uniform float light_radii[MAX_TOTAL_LIGHTS];
 
 void main() {
     float noise = texture(Texture, v_text, 0).x * noise_color_scale - noise_color_scale / 2.0;
@@ -29,19 +31,19 @@ void main() {
     // TODO include an ambient light at some point
 
     // include the lights
-    float light_multiplier = 0.5;
+    vec3 light_multiplier = vec3(0.5, 0.5, 0.5);
     for (int i=0; i<num_lights; ++i)
     {
         float dis = length(position - light_positions[i]);
-        if (dis < 0.1)
+        if (dis < light_radii[i])
         {
-            light_multiplier += (0.1 - dis) * 7.0;
+            light_multiplier += vec3((light_radii[i] - dis) * 5.0) * light_intensities[i];
         }
 
     }
 
     if (edge_distance > edge_check)
-    fragColor = out_color * vec4(light_multiplier, light_multiplier, light_multiplier, 1.0);
+    fragColor = out_color * vec4(light_multiplier, 1.0);
     else
     discard;
 }
