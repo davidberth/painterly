@@ -11,6 +11,7 @@ class OpenglContext:
         self.fbo = None
         self.ctx = None
         self.aspect_ratio = 1.0
+        self.light_texture = None
 
     def init(self, width, height, scaling_factor, red, green, blue):
         # here we set up the OpenGL context and canvas
@@ -39,16 +40,6 @@ class OpenglContext:
 
         self.brush_shader = self.ctx.program(vertex_shader=vertex_shader,
                                              fragment_shader=fragment_shader)
-
-        with open("shaders/pointlight_vertex.glsl", "r",
-                  encoding="utf-8") as vertex_shader_file:
-            vertex_shader = vertex_shader_file.read()
-        with open("shaders/pointlight_fragment.glsl", "r",
-                  encoding="utf-8") as fragment_shader_file:
-            fragment_shader = fragment_shader_file.read()
-
-        self.pointlight_shader = self.ctx.program(vertex_shader=vertex_shader,
-                                                  fragment_shader=fragment_shader)
 
         self.aspect_ratio = width / height
         self.ctx.enable(moderngl.BLEND)

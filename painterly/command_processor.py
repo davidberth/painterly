@@ -45,7 +45,7 @@ class CommandProcessor:
 
         # render the scene
         print('rendering strokes')
-        self.lights.set_uniform(self.opengl_ctx)
+        self.lights.create_texture(self.opengl_ctx)
         self.strokes.render(self.opengl_ctx)
 
         # clean up the context
