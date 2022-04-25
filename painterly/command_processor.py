@@ -42,9 +42,11 @@ class CommandProcessor:
         self.opengl_ctx.init(width, height, scaling_factor, red, green, blue)
 
     def save(self, arguments):
+
         # render the scene
+        print('rendering strokes')
+        self.lights.set_uniform(self.opengl_ctx)
         self.strokes.render(self.opengl_ctx)
-        self.lights.render(self.opengl_ctx)
 
         # clean up the context
         name = arguments[0]

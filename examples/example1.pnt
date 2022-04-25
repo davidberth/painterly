@@ -1,8 +1,35 @@
 - D. Berthiaume 4/9/2022
-canvas 1000 1000 2 0.9 0.9 0.9
-brush t0.01 h0.4 s0.9 b0.9 a0.95 q0.4
-sample 1 nr20 rt0.1
-    stroke 0 0 0 .1
+canvas 1000 1000 1 0.9 0.9 0.9
+brush t0.02 h0.1 s0.9 b0.5 a1.0
+stroke -0.1 0.2 1.1 0.22 w0.005
+sample 4 m.2
+    brush t0.03 h0.4 s0.1 b0.1 a1.0
+    {yy} = (.23,.27)
+    stroke 0 0 0 {yy} w0.005
+    brush t0.007 s0.0 b1 a1
+    stroke -0.008 0 -0.008 {yy} w0.005
+    brush h0.4 s0.1 b0.2 a1
+    sample 1 nr3 rt(0.1,0.2) lm 1
+        brush t0.015
+        stroke 0 0 0 .1 w0.005
+        sample 1 nr3 rt0.1 lm 1
+            light 0 0 0.2 0.5 1 0.1 0.1
+            brush t0.01
+            stroke 0 0 0 .07 w0.002
+            sample 1 nr4 rt(0.08,0.1) lm 1
+                brush t0.007 a1
+                stroke 0 0 0 .05 w0.001
+                sample 5
+                    brush t0.01 h(.8,1) b0.3 s1 a1
+                    {y} = (0.01,0.02)
+                    stroke 0 {y} 0.01 {y}
+                sample 1 nr4 rt(0.06,0.09) lm 1
+                    brush t0.003 a1
+                    stroke 0 0 0 .04 w0.001
+                    sample 5
+                        brush t0.01 h(.8,1) b0.5 s1 a1
+                        {y} = (0.01,0.02)
+                        stroke 0 {y} 0.01 {y}
 save tree
 
 

@@ -11,5 +11,5 @@ void main() {
 
     color = in_color;
     v_text = in_tex_coord;
-    gl_Position = vec4(in_vert * 2.0 - 1.0, 0.0, 1.0);
+    gl_Position = vec4(in_vert * 2.0 - 1.0, 0.001, 1.0);
 }

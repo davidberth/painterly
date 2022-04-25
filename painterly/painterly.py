@@ -37,6 +37,7 @@ def main():
     script_traverser = ScriptTraverser()
     # traverse recursively through the painterly script and process each
     # command
+
     for sample_number, level, command, arguments in \
             script_traverser.traverse_script(
                 transformed_results.children):

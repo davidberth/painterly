@@ -25,7 +25,7 @@ class OpenglContext:
         self.fbo = self.ctx.simple_framebuffer(
             self.buffer_size, components=4)
         self.fbo.use()
-        self.fbo.clear(red, green, blue, 1.0)
+        self.fbo.clear(red, green, blue, 1.0, depth=100.0)
 
         # generate the fractal noise texture
         self.init_perlin()
@@ -52,6 +52,7 @@ class OpenglContext:
 
         self.aspect_ratio = width / height
         self.ctx.enable(moderngl.BLEND)
+        self.ctx.enable(moderngl.DEPTH_TEST)
 
     def init_perlin(self):
         print('generating noise')
